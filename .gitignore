@@ -1,0 +1,53 @@
+# 의존성 디렉토리
+node_modules/
+
+# 환경 설정 파일
+.env
+.env.local
+.env.*.local
+
+# 로그 파일
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 런타임 데이터
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# 디렉토리
+dist/
+build/
+coverage/
+
+# IDE 설정 파일
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# 임시 파일
+*.tmp
+*.temp
+.cache/
+
+# 테스트 커버리지 리포트
+coverage/
+
+# json-server 데이터 파일
+db.json
+
+# CodeRabbit 관련
+.coderabbit/
+.coderabbit.json
+.coderabbit.yaml
+.coderabbit.yml
+.coderabbitrc
+.coderabbitrc.json
+.coderabbitrc.yaml
+.coderabbitrc.yml 
