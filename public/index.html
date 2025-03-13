@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>할 일 관리 앱</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <h1>할 일 관리</h1>
+    <div class="controls">
+        <button id="addButton">
+            새 할일 추가
+        </button>
+    </div>
+    <ul id="todoList" class="todo-list"></ul>
+
+    <!-- 새 할일 추가 모달 -->
+    <div id="createTodoModal" class="modal">
+        <div class="modal-content">
+            <h2>새 할일 추가</h2>
+            <input type="text" id="newTodoTitle" placeholder="할일을 입력하세요">
+            <div class="modal-buttons">
+                <button id="submitCreateButton" class="submit">추가</button>
+                <button id="cancelCreateButton" class="cancel">취소</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        import { initTodoApp } from './js/app.js';
+        
+        // 앱 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            initTodoApp();
+        });
+    </script>
+</body>
+</html>
