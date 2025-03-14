@@ -3,7 +3,15 @@ import { SHORTCUTS } from './config.js';
 import * as ui from './ui.js';
 import { $, $$, addMultipleEventListeners, handleError } from './utils.js';
 
-// 최대 ID 계산 함수
+/**
+ * Calculates the maximum todo ID from an array of todo objects.
+ *
+ * Iterates over the todos by converting each todo's `id` to a string and returns the highest value using lexicographical comparison.
+ * If the list is empty, returns "0".
+ *
+ * @param {Object[]} todos - Array of todo objects, each with an `id` property.
+ * @returns {string} The maximum todo id as a string, or "0" if no todos are provided.
+ */
 function calculateMaxId(todos) {
   return todos.reduce((max, todo) => {
     const currentId = String(todo.id);
@@ -11,7 +19,14 @@ function calculateMaxId(todos) {
   }, '0');
 }
 
-// 이벤트 리스너 등록
+/**
+ * Sets up event listeners to support user interactions in the Todo application.
+ *
+ * This function registers keyboard and mouse events to manage the create-todo modal:
+ * - Opens the create modal via a configured keyboard shortcut or the add button.
+ * - Handles submission of a new todo through the submit button or by pressing Enter in the input field.
+ * - Closes the modal when the cancel or close buttons are clicked.
+ */
 function setupEventListeners() {
   // 단축키 이벤트 리스너
   addMultipleEventListeners(document, 'keydown', e => {
@@ -46,7 +61,14 @@ function setupEventListeners() {
   });
 }
 
-// 할일 목록 새로고침
+/**
+ * Refreshes the todo list.
+ *
+ * Retrieves todos from the API, updates the UI with the new list, and returns the maximum todo ID.
+ * If fetching fails, logs the error and returns '0'.
+ *
+ * @returns {Promise<string>} A promise that resolves to the maximum todo ID, or '0' if an error occurs.
+ */
 async function refreshTodos() {
   try {
     const todos = await api.fetchTodos();
@@ -65,7 +87,14 @@ async function refreshTodos() {
   }
 }
 
-// 새 할일 생성 처리
+/**
+ * Handles the creation of a new todo item.
+ *
+ * This asynchronous function retrieves the todo title from the UI and validates the input.
+ * If the title is valid, it calls the API to create the todo item, closes the creation modal,
+ * and adds the new todo to the list with handlers for editing, toggling, and deleting.
+ * On failure, it delegates error handling with a 'CREATE_FAILED' code.
+ */
 async function handleCreateSubmit() {
   const title = ui.getInputTitle();
 
@@ -87,7 +116,17 @@ async function handleCreateSubmit() {
   }
 }
 
-// 할일 수정 처리
+/**
+ * Updates a todo item with new data.
+ *
+ * Constructs an update object from the provided title and completion status—only updating
+ * properties that are not null—then sends the update to the API. After a successful update,
+ * the todo list is refreshed.
+ *
+ * @param {string|number} id - The identifier of the todo item to update.
+ * @param {string|null} title - The new title for the todo item; if null, the title remains unchanged.
+ * @param {boolean|null} completed - The new completion status; if null, the current status is retained.
+ */
 async function handleEdit(id, title, completed) {
   try {
     const updateData = {};
@@ -101,12 +140,28 @@ async function handleEdit(id, title, completed) {
   }
 }
 
-// 할일 상태 토글
+/**
+ * Toggles the completion status of a todo item.
+ *
+ * This function updates only the completed state of the specified todo by invoking handleEdit()
+ * with a null title, leaving the existing title unchanged.
+ *
+ * @param {number|string} id - The unique identifier of the todo item.
+ * @param {boolean} completed - The new completion status of the todo item.
+ */
 function handleToggle(id, completed) {
   handleEdit(id, null, completed);
 }
 
-// 할일 삭제
+/**
+ * Deletes a todo item by its identifier and refreshes the todo list.
+ *
+ * This asynchronous function sends a delete request for the specified todo item
+ * and updates the displayed todos. If an error occurs during deletion, it is handled
+ * by invoking the error handler with a 'DELETE_FAILED' code.
+ *
+ * @param {string|number} id - The unique identifier of the todo item to delete.
+ */
 async function handleDelete(id) {
   try {
     await api.deleteTodoItem(id);
@@ -116,7 +171,12 @@ async function handleDelete(id) {
   }
 }
 
-// 앱 초기화
+/**
+ * Initializes the Todo application.
+ *
+ * This function sets up event listeners for user interactions and refreshes the list of todos
+ * by fetching the current data from the API.
+ */
 export function initTodoApp() {
   setupEventListeners();
   refreshTodos();
