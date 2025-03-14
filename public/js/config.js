@@ -7,13 +7,13 @@
  * @type {Object}
  */
 export const API_CONFIG = {
-    // API 서버 기본 URL
-    BASE_URL: 'http://localhost:3000',
-    
-    // API 엔드포인트 경로
-    ENDPOINTS: {
-        TODOS: '/todos'
-    }
+  // API 서버 기본 URL
+  BASE_URL: 'http://localhost:3000',
+
+  // API 엔드포인트 경로
+  ENDPOINTS: {
+    TODOS: '/todos',
+  },
 };
 
 /**
@@ -21,12 +21,12 @@ export const API_CONFIG = {
  * @type {Object}
  */
 export const HTTP_STATUS = {
-    OK: 200,
-    CREATED: 201,
-    NO_CONTENT: 204,
-    BAD_REQUEST: 400,
-    NOT_FOUND: 404,
-    INTERNAL_SERVER_ERROR: 500
+  OK: 200,
+  CREATED: 201,
+  NO_CONTENT: 204,
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
 };
 
 /**
@@ -34,13 +34,13 @@ export const HTTP_STATUS = {
  * @type {Object}
  */
 export const ERROR_MESSAGES = {
-    FETCH_FAILED: '할일 목록을 불러오는데 실패했습니다.',
-    CREATE_FAILED: '새 할일을 생성하는데 실패했습니다.',
-    UPDATE_FAILED: '할일을 수정하는데 실패했습니다.',
-    DELETE_FAILED: '할일을 삭제하는데 실패했습니다.',
-    EMPTY_TITLE: '할일 제목을 입력해주세요.',
-    ITEM_NOT_FOUND: '해당 할일을 찾을 수 없습니다.',
-    INVALID_RESPONSE: '서버로부터 잘못된 응답을 받았습니다.'
+  FETCH_FAILED: '할일 목록을 불러오는데 실패했습니다.',
+  CREATE_FAILED: '새 할일을 생성하는데 실패했습니다.',
+  UPDATE_FAILED: '할일을 수정하는데 실패했습니다.',
+  DELETE_FAILED: '할일을 삭제하는데 실패했습니다.',
+  EMPTY_TITLE: '할일 제목을 입력해주세요.',
+  ITEM_NOT_FOUND: '해당 할일을 찾을 수 없습니다.',
+  INVALID_RESPONSE: '서버로부터 잘못된 응답을 받았습니다.',
 };
 
 /**
@@ -48,13 +48,13 @@ export const ERROR_MESSAGES = {
  * @type {Object}
  */
 export const ERROR_TYPES = {
-    FETCH_FAILED: 'FETCH_FAILED',
-    CREATE_FAILED: 'CREATE_FAILED',
-    UPDATE_FAILED: 'UPDATE_FAILED',
-    DELETE_FAILED: 'DELETE_FAILED',
-    EMPTY_TITLE: 'EMPTY_TITLE',
-    ITEM_NOT_FOUND: 'ITEM_NOT_FOUND',
-    INVALID_RESPONSE: 'INVALID_RESPONSE'
+  FETCH_FAILED: 'FETCH_FAILED',
+  CREATE_FAILED: 'CREATE_FAILED',
+  UPDATE_FAILED: 'UPDATE_FAILED',
+  DELETE_FAILED: 'DELETE_FAILED',
+  EMPTY_TITLE: 'EMPTY_TITLE',
+  ITEM_NOT_FOUND: 'ITEM_NOT_FOUND',
+  INVALID_RESPONSE: 'INVALID_RESPONSE',
 };
 
 /**
@@ -62,9 +62,9 @@ export const ERROR_TYPES = {
  * @type {Object}
  */
 export const SHORTCUTS = {
-    CREATE_TODO: {
-        ctrl: true,
-        alt: true,
-        key: 'n'
-    }
+  CREATE_TODO: {
+    ctrl: true,
+    alt: true,
+    key: 'n',
+  },
 };

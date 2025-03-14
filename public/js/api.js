@@ -7,18 +7,18 @@ import { API_CONFIG, ERROR_MESSAGES, ERROR_TYPES, HTTP_STATUS } from './config.j
  * @returns {Object} fetch API에 전달할 설정 객체
  */
 const createRequestConfig = (method, body = null) => {
-    const config = {
-        method,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
+  const config = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
 
-    if (body) {
-        config.body = JSON.stringify(body);
-    }
+  if (body) {
+    config.body = JSON.stringify(body);
+  }
 
-    return config;
+  return config;
 };
 
 /**
@@ -29,24 +29,24 @@ const createRequestConfig = (method, body = null) => {
  * @throws {Error} API 요청 실패 시 에러 발생
  */
 const executeRequest = async (url, config) => {
-    try {
-        const response = await fetch(url, config);
-        
-        if (!response.ok) {
-            throw new Error(ERROR_MESSAGES[ERROR_TYPES.FETCH_FAILED]);
-        }
+  try {
+    const response = await fetch(url, config);
 
-        // 204 No Content 응답의 경우 데이터 없이 성공 처리
-        if (response.status === HTTP_STATUS.NO_CONTENT) {
-            return true;
-        }
-
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('API 요청 실패:', error);
-        throw error;
+    if (!response.ok) {
+      throw new Error(ERROR_MESSAGES[ERROR_TYPES.FETCH_FAILED]);
     }
+
+    // 204 No Content 응답의 경우 데이터 없이 성공 처리
+    if (response.status === HTTP_STATUS.NO_CONTENT) {
+      return true;
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('API 요청 실패:', error);
+    throw error;
+  }
 };
 
 /**
@@ -55,16 +55,16 @@ const executeRequest = async (url, config) => {
  * @throws {Error} 목록 조회 실패 시 에러 발생
  */
 export const fetchTodos = async () => {
-    const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}`;
-    const config = createRequestConfig('GET');
-    
-    const data = await executeRequest(url, config);
-    
-    if (!Array.isArray(data)) {
-        throw new Error(ERROR_MESSAGES[ERROR_TYPES.INVALID_RESPONSE]);
-    }
-    
-    return data;
+  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}`;
+  const config = createRequestConfig('GET');
+
+  const data = await executeRequest(url, config);
+
+  if (!Array.isArray(data)) {
+    throw new Error(ERROR_MESSAGES[ERROR_TYPES.INVALID_RESPONSE]);
+  }
+
+  return data;
 };
 
 /**
@@ -73,26 +73,26 @@ export const fetchTodos = async () => {
  * @returns {Promise<Object>} 생성된 할일 객체
  * @throws {Error} 제목이 비어있거나 생성 실패 시 에러 발생
  */
-export const createTodoItem = async (title) => {
-    if (!title) {
-        throw new Error(ERROR_MESSAGES[ERROR_TYPES.EMPTY_TITLE]);
-    }
+export const createTodoItem = async title => {
+  if (!title) {
+    throw new Error(ERROR_MESSAGES[ERROR_TYPES.EMPTY_TITLE]);
+  }
 
-    const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}`;
-    const todos = await fetchTodos();
-    const maxId = todos.reduce((max, todo) => {
-        const currentId = Number(todo.id);
-        return currentId > max ? currentId : max;
-    }, 0);
-    
-    const newTodo = {
-        id: String(maxId + 1),
-        title,
-        completed: false
-    };
-    
-    const config = createRequestConfig('POST', newTodo);
-    return await executeRequest(url, config);
+  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}`;
+  const todos = await fetchTodos();
+  const maxId = todos.reduce((max, todo) => {
+    const currentId = Number(todo.id);
+    return currentId > max ? currentId : max;
+  }, 0);
+
+  const newTodo = {
+    id: String(maxId + 1),
+    title,
+    completed: false,
+  };
+
+  const config = createRequestConfig('POST', newTodo);
+  return await executeRequest(url, config);
 };
 
 /**
@@ -103,10 +103,10 @@ export const createTodoItem = async (title) => {
  * @throws {Error} 수정 실패 시 에러 발생
  */
 export const updateTodoItem = async (id, updates) => {
-    const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}/${id}`;
-    const config = createRequestConfig('PATCH', updates);
-    
-    return await executeRequest(url, config);
+  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}/${id}`;
+  const config = createRequestConfig('PATCH', updates);
+
+  return await executeRequest(url, config);
 };
 
 /**
@@ -115,9 +115,9 @@ export const updateTodoItem = async (id, updates) => {
  * @returns {Promise<boolean>} 삭제 성공 여부
  * @throws {Error} 삭제 실패 시 에러 발생
  */
-export const deleteTodoItem = async (id) => {
-    const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}/${id}`;
-    const config = createRequestConfig('DELETE');
-    
-    return await executeRequest(url, config);
+export const deleteTodoItem = async id => {
+  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}/${id}`;
+  const config = createRequestConfig('DELETE');
+
+  return await executeRequest(url, config);
 };
