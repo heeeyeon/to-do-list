@@ -3,7 +3,8 @@ import { ERROR_MESSAGES } from './config.js';
 // 에러 처리 유틸리티
 export function handleError(error, errorType) {
   console.error(`${errorType} 실패:`, error);
-  alert(ERROR_MESSAGES[errorType]);
+  const message = ERROR_MESSAGES[errorType] || error.message || '알 수 없는 오류가 발생했습니다.';
+  alert(message);
 }
 
 // DOM 요소 선택 유틸리티
@@ -28,9 +29,17 @@ export function $$(selector) {
  * addMultipleEventListeners(deleteButtons, 'click', handleDelete);
  */
 export function addMultipleEventListeners(elements, eventType, handler) {
+  if (!elements) {
+    console.warn('addMultipleEventListeners: elements가 제공되지 않았습니다.');
+    return;
+  }
   if (elements instanceof NodeList) {
     elements.forEach(element => element.addEventListener(eventType, handler));
   } else {
+    if (!(elements instanceof Element)) {
+      console.warn('addMultipleEventListeners: elements가 유효하지 않은 타입입니다.');
+      return;
+    }
     elements.addEventListener(eventType, handler);
   }
 }

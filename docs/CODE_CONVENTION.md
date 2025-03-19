@@ -155,7 +155,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
 ## 파일 구조
 
-```
+```plaintext
 src/
 ├── components/      # 재사용 가능한 컴포넌트
 ├── pages/          # 페이지 컴포넌트

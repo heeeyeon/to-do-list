@@ -1,7 +1,6 @@
 import * as api from './api.js';
-import { SHORTCUTS } from './config.js';
 import * as ui from './ui.js';
-import { $, $$, addMultipleEventListeners, handleError } from './utils.js';
+import { $, addMultipleEventListeners, handleError } from './utils.js';
 
 // 최대 ID 계산 함수
 function calculateMaxId(todos) {
@@ -13,42 +12,54 @@ function calculateMaxId(todos) {
 
 // 이벤트 리스너 등록
 function setupEventListeners() {
-  // 단축키 이벤트 리스너
-  addMultipleEventListeners(document, 'keydown', e => {
-    if (
-      e.ctrlKey === SHORTCUTS.CREATE_TODO.ctrl &&
-      e.altKey === SHORTCUTS.CREATE_TODO.alt &&
-      e.key.toLowerCase() === SHORTCUTS.CREATE_TODO.key
-    ) {
-      e.preventDefault();
-      ui.modal.openCreate();
-    }
+  // 새 할일 추가 버튼
+  addMultipleEventListeners($('#addButton'), 'click', () => {
+    ui.modal.openCreate();
   });
 
-  // 버튼 클릭 이벤트 리스너
-  addMultipleEventListeners($('#addButton'), 'click', ui.modal.openCreate);
-  addMultipleEventListeners($('#submitCreateButton'), 'click', handleCreateSubmit);
-  addMultipleEventListeners($('#cancelCreateButton'), 'click', ui.modal.closeCreate);
+  // 모달 닫기 버튼
+  addMultipleEventListeners($('#closeModalButton'), 'click', () => {
+    ui.modal.closeCreate();
+  });
 
-  // 모달 닫기 버튼 이벤트 리스너
-  addMultipleEventListeners($$('.close'), 'click', e => {
-    if (e.target.closest('#createTodoModal')) {
-      ui.modal.closeCreate();
-    }
+  // 모달 취소 버튼
+  addMultipleEventListeners($('#closeCreateModalButton'), 'click', () => {
+    ui.modal.closeCreate();
+  });
+
+  // 새 할일 생성 폼 제출
+  addMultipleEventListeners($('#submitCreateButton'), 'click', async () => {
+    await handleCreateSubmit();
   });
 
   // 새 할일 입력 필드 엔터키 이벤트
-  addMultipleEventListeners($('#newTodoTitle'), 'keydown', e => {
+  addMultipleEventListeners($('#newTodoTitle'), 'keydown', async e => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      handleCreateSubmit();
+      await handleCreateSubmit();
+    }
+  });
+
+  // 단축키 이벤트 리스너
+  document.addEventListener('keydown', e => {
+    // Ctrl + Alt + N: 새 할일 추가
+    if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'n') {
+      e.preventDefault();
+      ui.modal.openCreate();
     }
   });
 }
 
 // 할일 목록 새로고침
-async function refreshTodos() {
+async function refreshTodos(forceRefresh = false) {
+  // 강제 새로고침이 필요하지 않고 이미 데이터가 있는 경우 캐시된 데이터를 반환
+  const cachedTodos = ui.getTodos();
+  if (!forceRefresh && cachedTodos.length > 0) {
+    return cachedTodos[cachedTodos.length - 1].id;
+  }
+
   try {
+    ui.showLoading();
     const todos = await api.fetchTodos();
     const maxId = calculateMaxId(todos);
 
@@ -62,6 +73,8 @@ async function refreshTodos() {
   } catch (error) {
     handleError(error, 'FETCH_FAILED');
     return '0';
+  } finally {
+    ui.hideLoading();
   }
 }
 
@@ -94,8 +107,16 @@ async function handleEdit(id, title, completed) {
     if (title !== null) updateData.title = title;
     if (completed !== null) updateData.completed = completed;
 
-    await api.updateTodoItem(id, updateData);
-    await refreshTodos();
+    const updatedTodo = await api.updateTodoItem(id, updateData);
+
+    // 캐시 업데이트 - 서버에서 반환된 데이터 사용
+    const cachedTodos = ui.getTodos();
+    const updatedTodos = cachedTodos.map(todo => (todo.id === id ? updatedTodo : todo));
+    ui.displayTodos(updatedTodos, {
+      onEdit: handleEdit,
+      onToggle: handleToggle,
+      onDelete: handleDelete,
+    });
   } catch (error) {
     handleError(error, 'UPDATE_FAILED');
   }
@@ -110,7 +131,14 @@ function handleToggle(id, completed) {
 async function handleDelete(id) {
   try {
     await api.deleteTodoItem(id);
-    await refreshTodos();
+    // 캐시에서 삭제된 항목 제거
+    const cachedTodos = ui.getTodos();
+    const updatedTodos = cachedTodos.filter(todo => todo.id !== id);
+    ui.displayTodos(updatedTodos, {
+      onEdit: handleEdit,
+      onToggle: handleToggle,
+      onDelete: handleDelete,
+    });
   } catch (error) {
     handleError(error, 'DELETE_FAILED');
   }

@@ -2,7 +2,7 @@
 
 ## 커밋 메시지 구조
 
-```
+```text
 <type>(<scope>): <subject>
 
 <body>
@@ -51,7 +51,7 @@
 
 ## 예시
 
-```
+```text
 feat(auth): add login functionality
 
 - implement login form
@@ -61,14 +61,14 @@ feat(auth): add login functionality
 Closes #123
 ```
 
-```
+```text
 fix(todo): resolve item deletion bug
 
 - fix race condition in delete operation
 - add error handling
 ```
 
-```
+```text
 docs(readme): update installation guide
 
 - add development setup instructions

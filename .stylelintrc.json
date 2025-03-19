@@ -9,34 +9,22 @@
   "rules": {
     "order/properties-alphabetical-order": true,
     "no-empty-source": null,
-    "declaration-empty-line-before": null,
-    "no-missing-end-of-source-newline": null,
-    "indentation": 2,
-    "string-quotes": "single",
-    "no-duplicate-selectors": true,
-    "color-hex-case": "lower",
-    "color-hex-length": "short",
-    "color-named": "never",
-    "selector-max-id": 0,
-    "selector-combinator-space-after": "always",
-    "selector-attribute-quotes": "always",
-    "selector-attribute-operator-space-before": "never",
-    "selector-attribute-operator-space-after": "never",
-    "selector-attribute-brackets-space-inside": "never",
-    "declaration-block-trailing-semicolon": "always",
-    "declaration-colon-space-before": "never",
-    "declaration-colon-space-after": "always",
+    "custom-property-empty-line-before": "never",
+    "declaration-empty-line-before": "never",
+    "block-no-empty": true,
+    "color-function-notation": "modern",
+    "color-hex-alpha": "never",
+    "color-no-invalid-hex": true,
+    "length-zero-no-unit": true,
+    "alpha-value-notation": "percentage",
+    "selector-class-pattern": null,
+    "no-descending-specificity": null,
+    "declaration-block-single-line-max-declarations": 1,
     "property-no-vendor-prefix": true,
     "value-no-vendor-prefix": true,
-    "function-url-quotes": "always",
-    "font-weight-notation": "numeric",
-    "font-family-name-quotes": "always-where-required",
-    "at-rule-no-vendor-prefix": true,
     "selector-no-vendor-prefix": true,
-    "media-feature-range-operator-space-before": "always",
-    "media-feature-range-operator-space-after": "always",
-    "media-feature-parentheses-space-inside": "never",
     "media-feature-name-no-vendor-prefix": true,
+    "at-rule-no-vendor-prefix": true,
     "at-rule-no-unknown": [
       true,
       {
@@ -50,4 +38,4 @@
       }
     ]
   }
-} 
+}

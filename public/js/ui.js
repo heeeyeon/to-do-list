@@ -6,7 +6,14 @@ const elements = {
   todoList: $('#todoList'),
   createModal: $('#createTodoModal'),
   newTodoTitle: $('#newTodoTitle'),
+  loadingMessage: createElement('div', {
+    className: 'loading-message',
+    text: '로딩 중...',
+  }),
 };
+
+// 캐시된 todos 데이터
+let todosCache = [];
 
 // 모달 관련 함수들
 export const modal = {
@@ -24,53 +31,71 @@ export const modal = {
 
 // Todo 아이템 생성 함수
 function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
-  const todoId = String(todo.id);
+  try {
+    const todoId = String(todo.id);
 
-  const li = createElement('li', {
-    className: `todo-item ${todo.completed ? 'completed' : ''}`,
-  });
+    const li = createElement('li', {
+      className: `todo-item ${todo.completed ? 'completed' : ''}`,
+    });
 
-  const todoContent = createElement('div', {
-    className: 'todo-content',
-    onClick: () => makeEditable(titleSpan, todoId, onEdit),
-  });
+    const todoContent = createElement('div', {
+      className: 'todo-content',
+      onClick: () => makeEditable(titleSpan, todoId, onEdit),
+    });
 
-  const titleSpan = createElement('span', {
-    className: 'title',
-    text: todo.title,
-  });
+    const titleSpan = createElement('span', {
+      className: 'title',
+      text: todo.title,
+    });
 
-  const editIcon = createElement('span', {
-    className: 'edit-icon',
-    text: '✏️',
-  });
+    const editIcon = createElement('span', {
+      className: 'edit-icon',
+      text: '✏️',
+    });
 
-  const buttonsDiv = createElement('div', { className: 'todo-buttons' });
-  const toggleButton = createElement('button', {
-    className: `toggle-btn ${todo.completed ? '' : 'incomplete'}`,
-    text: todo.completed ? '✓ 완료됨' : '○ 미완료',
-    onClick: () => onToggle(todoId, !todo.completed),
-  });
+    const buttonsDiv = createElement('div', { className: 'todo-buttons' });
+    const toggleButton = createElement('button', {
+      className: `toggle-btn ${todo.completed ? '' : 'incomplete'}`,
+      text: todo.completed ? '✓ 완료됨' : '○ 미완료',
+      onClick: () => onToggle(todoId, !todo.completed),
+    });
 
-  const deleteButton = createElement('button', {
-    className: 'delete-btn',
-    text: '삭제',
-    onClick: () => {
-      if (confirm(`"${todo.title}" 항목을 삭제하시겠습니까?`)) {
-        onDelete(todoId);
-      }
-    },
-  });
+    const deleteButton = createElement('button', {
+      className: 'delete-btn',
+      text: '삭제',
+      onClick: () => {
+        if (confirm(`"${todo.title}" 항목을 삭제하시겠습니까?`)) {
+          onDelete(todoId);
+        }
+      },
+    });
 
-  todoContent.appendChild(titleSpan);
-  todoContent.appendChild(editIcon);
-  buttonsDiv.appendChild(toggleButton);
-  buttonsDiv.appendChild(deleteButton);
+    todoContent.appendChild(titleSpan);
+    todoContent.appendChild(editIcon);
+    buttonsDiv.appendChild(toggleButton);
+    buttonsDiv.appendChild(deleteButton);
 
-  li.appendChild(todoContent);
-  li.appendChild(buttonsDiv);
+    li.appendChild(todoContent);
+    li.appendChild(buttonsDiv);
 
-  return li;
+    return li;
+  } catch (error) {
+    console.error('createTodoItem 오류:', error);
+    return createElement('li', {
+      className: 'todo-item error',
+      text: '오류가 발생했습니다. 다시 시도해주세요.',
+    });
+  }
+}
+
+// 로딩 상태 표시 함수
+export function showLoading() {
+  elements.todoList.appendChild(elements.loadingMessage);
+}
+
+// 로딩 상태 숨김 함수
+export function hideLoading() {
+  elements.loadingMessage.remove();
 }
 
 // 할일 목록 표시 함수
@@ -78,6 +103,13 @@ export function displayTodos(todos, handlers) {
   elements.todoList.innerHTML = '';
   const todoElements = todos.map(todo => createTodoItem(todo, handlers));
   elements.todoList.append(...todoElements);
+  // 캐시 업데이트
+  todosCache = todos;
+}
+
+// 캐시된 todos 반환
+export function getTodos() {
+  return todosCache;
 }
 
 // 인라인 편집 관련 함수들
@@ -158,4 +190,6 @@ export function getInputTitle() {
 export function addTodoToList(todo, handlers) {
   const todoElement = createTodoItem(todo, handlers);
   elements.todoList.appendChild(todoElement);
+  // 캐시 업데이트
+  todosCache.push(todo);
 }

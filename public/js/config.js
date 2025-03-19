@@ -68,3 +68,26 @@ export const SHORTCUTS = {
     key: 'n',
   },
 };
+
+/**
+ * API 재시도 설정
+ * @type {Object}
+ */
+export const RETRY_CONFIG = {
+  MAX_RETRIES: 3,
+  INITIAL_DELAY: 1000, // 1초
+  MAX_DELAY: 5000, // 5초
+  BACKOFF_FACTOR: 2, // 지수 백오프
+};
+
+/**
+ * HTTP 메서드 상수
+ * @type {Object}
+ */
+export const HTTP_METHOD = {
+  GET: 'GET',
+  POST: 'POST',
+  PUT: 'PUT',
+  PATCH: 'PATCH',
+  DELETE: 'DELETE',
+};

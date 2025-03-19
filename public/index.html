@@ -11,20 +11,23 @@
 <body>
     <h1>할 일 관리</h1>
     <div class="controls">
-        <button id="addButton" class="add-button">
+        <button id="addButton" class="add-button" aria-label="새 할일 추가하기">
             새 할일 추가
         </button>
     </div>
-    <ul id="todoList" class="todo-list"></ul>
+    <ul id="todoList" class="todo-list" aria-label="할일 목록"></ul>
 
     <!-- 새 할일 추가 모달 -->
     <div id="createTodoModal" class="modal">
         <div class="modal-content">
-            <h2>새 할일 추가</h2>
+            <div class="modal-header">
+                <h2>새 할일 추가</h2>
+                <button id="closeModalButton" class="close-button">&times;</button>
+            </div>
             <input type="text" id="newTodoTitle" placeholder="할일을 입력하세요">
             <div class="modal-buttons">
                 <button id="submitCreateButton" class="submit">추가</button>
-                <button id="cancelCreateButton" class="cancel">취소</button>
+                <button id="closeCreateModalButton" class="cancel">취소</button>
             </div>
         </div>
     </div>
