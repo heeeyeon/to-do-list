@@ -125,13 +125,22 @@ function createEditableInput(currentText, todoId, onEdit) {
 
   input.onkeydown = e => {
     if (e.key === 'Enter') {
+      input.dataset.keyboardAction = 'enter';
       saveEdit(input, todoId, onEdit);
+      e.preventDefault();
     } else if (e.key === 'Escape') {
+      input.dataset.keyboardAction = 'escape';
       cancelEdit(input, todoId, onEdit);
+      e.preventDefault();
     }
   };
 
   input.onblur = () => {
+    // 키보드 액션에 의한 blur 이벤트 처리 방지
+    if (input.dataset.keyboardAction) {
+      delete input.dataset.keyboardAction;
+      return;
+    }
     if (input.parentElement) {
       saveEdit(input, todoId, onEdit);
     }
