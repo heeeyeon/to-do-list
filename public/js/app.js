@@ -38,12 +38,12 @@ function setupEventListeners() {
   });
 
   // 새 할일 생성 폼 제출
-  safeAddListener('submitCreateButton', 'click', async () => {
+  safeAddListener('#submitCreateButton', 'click', async () => {
     await handleCreateSubmit();
   });
 
   // 새 할일 입력 필드 엔터키 이벤트
-  safeAddListener('newTodoTitle', 'keydown', async e => {
+  safeAddListener('#newTodoTitle', 'keydown', async e => {
     if (e.key === 'Enter') {
       e.preventDefault();
       await handleCreateSubmit();
