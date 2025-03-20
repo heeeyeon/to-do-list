@@ -5,9 +5,9 @@ import { $, addMultipleEventListeners, handleError } from './utils.js';
 // 최대 ID 계산 함수
 function calculateMaxId(todos) {
   return todos.reduce((max, todo) => {
-    const currentId = String(todo.id);
-    return currentId > max ? currentId : max;
-  }, '0');
+    const currentId = Number(todo.id);
+    return isNaN(currentId) ? max : Math.max(currentId, max);
+  }, 0);
 }
 
 // 이벤트 리스너 등록
