@@ -12,35 +12,45 @@ function calculateMaxId(todos) {
 
 // 이벤트 리스너 등록
 function setupEventListeners() {
+  // 안전하게 이벤트 리스너 추가하는 헬퍼 함수
+  const safeAddListener = (selector, eventType, handler) => {
+    const element = $(selector); // '#' 제거하고 전체 선택자를 받음
+    if (!element) {
+      console.warn(`요소를 찾을 수 없습니다: ${selector}`);
+      return;
+    }
+    addMultipleEventListeners(element, eventType, handler);
+  };
+
   // 새 할일 추가 버튼
-  addMultipleEventListeners($('#addButton'), 'click', () => {
+  safeAddListener('#addButton', 'click', () => {
     ui.modal.openCreate();
   });
 
   // 모달 닫기 버튼
-  addMultipleEventListeners($('#closeModalButton'), 'click', () => {
+  safeAddListener('#closeModalButton', 'click', () => {
     ui.modal.closeCreate();
   });
 
-  // 모달 취소 버튼
-  addMultipleEventListeners($('#closeCreateModalButton'), 'click', () => {
+  // 다른 선택자도 사용 가능
+  safeAddListener('.close-button', 'click', () => {
     ui.modal.closeCreate();
   });
 
   // 새 할일 생성 폼 제출
-  addMultipleEventListeners($('#submitCreateButton'), 'click', async () => {
+  safeAddListener('submitCreateButton', 'click', async () => {
     await handleCreateSubmit();
   });
 
   // 새 할일 입력 필드 엔터키 이벤트
-  addMultipleEventListeners($('#newTodoTitle'), 'keydown', async e => {
+  safeAddListener('newTodoTitle', 'keydown', async e => {
     if (e.key === 'Enter') {
       e.preventDefault();
       await handleCreateSubmit();
     }
   });
 
-  // 단축키 이벤트 리스너
+  // 단축키 이벤트 리스너는 document에 등록하므로 별도 처리
   document.addEventListener('keydown', e => {
     // Ctrl + Alt + N: 새 할일 추가
     if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'n') {
