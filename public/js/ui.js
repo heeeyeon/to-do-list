@@ -36,6 +36,7 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
 
     const li = createElement('li', {
       className: `todo-item ${todo.completed ? 'completed' : ''}`,
+      id: `todo-${todoId}`,
     });
 
     const todoContent = createElement('div', {
