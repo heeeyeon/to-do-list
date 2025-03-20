@@ -1,5 +1,5 @@
 import { ERROR_MESSAGES } from './config.js';
-import { $, createElement } from './utils.js';
+import { $, $$, createElement } from './utils.js';
 
 // DOM 요소 참조
 const elements = {
@@ -192,4 +192,23 @@ export function addTodoToList(todo, handlers) {
   elements.todoList.appendChild(todoElement);
   // 캐시 업데이트
   todosCache.push(todo);
+}
+
+/**
+ * 사용자에게 메시지를 표시하는 함수
+ * @param {string} message - 표시할 메시지
+ */
+export function showMessage(message) {
+  const messageContainer = $$('.message-container')[0];
+  messageContainer.innerText = message;
+  messageContainer.classList.add('show'); // 애니메이션 적용
+
+  // 메시지를 일정 시간 후에 자동으로 제거
+  setTimeout(() => {
+    messageContainer.classList.add('hide'); // 서서히 사라지는 애니메이션 적용
+
+    setTimeout(() => {
+      messageContainer.classList.remove('show', 'hide'); // 애니메이션이 끝난 후 완전히 숨김
+    }, 500); // transition 시간과 동일하게 설정 (0.5s)
+  }, 3000);
 }

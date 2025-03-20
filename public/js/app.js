@@ -1,4 +1,5 @@
 import * as api from './api.js';
+import { ERROR_MESSAGES } from './config.js';
 import * as ui from './ui.js';
 import { $, addMultipleEventListeners, handleError } from './utils.js';
 
@@ -106,7 +107,19 @@ async function handleCreateSubmit() {
       onDelete: handleDelete,
     });
   } catch (error) {
+    // 에러 타입에 따른 메시지 설정
+    let errorMessage = ERROR_MESSAGES.GENERIC_ERROR;
+    if (error.name === 'NetworkError') {
+      errorMessage = ERROR_MESSAGES.NETWORK_ERROR;
+    } else if (error.name === 'TimeoutError') {
+      errorMessage = ERROR_MESSAGES.TIMEOUT_ERROR;
+    } else if (error.name === 'ServerError') {
+      errorMessage = ERROR_MESSAGES.SERVER_ERROR;
+    }
+
+    ui.modal.closeCreate();
     handleError(error, 'CREATE_FAILED');
+    ui.showMessage(errorMessage);
   }
 }
 

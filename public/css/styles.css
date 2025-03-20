@@ -310,6 +310,33 @@ button:hover {
   outline: none;
 }
 
+.message-container {
+  background-color: black;
+  border-radius: 5px;
+  color: white;
+  left: 50%;
+  min-width: 200px;
+  opacity: 0%;
+  padding: 10px;
+  position: fixed;
+  text-align: center;
+  top: 30px;
+  transform: translateX(-50%) translateY(20px);
+  transition: opacity 0.5s, transform 0.5s;
+  visibility: hidden;
+}
+
+.message-container.show {
+  opacity: 100%;
+  transform: translateX(-50%) translateY(0);
+  visibility: visible;
+}
+
+.message-container.hide {
+  opacity: 0%;
+  transform: translateX(-50%) translateY(20px);
+}
+
 /* 반응형 디자인 */
 @media (max-width: 600px) {
   body {

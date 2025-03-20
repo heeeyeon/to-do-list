@@ -41,6 +41,10 @@ export const ERROR_MESSAGES = {
   EMPTY_TITLE: '할일 제목을 입력해주세요.',
   ITEM_NOT_FOUND: '해당 할일을 찾을 수 없습니다.',
   INVALID_RESPONSE: '서버로부터 잘못된 응답을 받았습니다.',
+  NETWORK_ERROR: '네트워크 연결이 끊어졌습니다.',
+  TIMEOUT_ERROR: '서버 응답 시간이 초과되었습니다.',
+  SERVER_ERROR: '서버 오류가 발생했습니다.',
+  GENERIC_ERROR: '네트워크 문제로 할일을 생성하지 못했습니다.',
 };
 
 /**
@@ -67,17 +71,6 @@ export const SHORTCUTS = {
     alt: true,
     key: 'n',
   },
-};
-
-/**
- * API 재시도 설정
- * @type {Object}
- */
-export const RETRY_CONFIG = {
-  MAX_RETRIES: 3,
-  INITIAL_DELAY: 1000, // 1초
-  MAX_DELAY: 5000, // 5초
-  BACKOFF_FACTOR: 2, // 지수 백오프
 };
 
 /**

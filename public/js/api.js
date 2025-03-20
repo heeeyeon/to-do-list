@@ -1,11 +1,4 @@
-import {
-  API_CONFIG,
-  ERROR_MESSAGES,
-  ERROR_TYPES,
-  HTTP_METHOD,
-  HTTP_STATUS,
-  RETRY_CONFIG,
-} from './config.js';
+import { API_CONFIG, ERROR_MESSAGES, ERROR_TYPES, HTTP_METHOD } from './config.js';
 
 /**
  * API 요청에 필요한 설정을 생성하는 함수
@@ -29,56 +22,30 @@ const createRequestConfig = (method, body = null) => {
 };
 
 /**
- * 지수 백오프 딜레이 계산 함수
- * @param {number} attempt - 현재 시도 횟수
- * @returns {number} 대기 시간 (밀리초)
- */
-const calculateDelay = attempt => {
-  const delay = Math.min(
-    RETRY_CONFIG.INITIAL_DELAY * Math.pow(RETRY_CONFIG.BACKOFF_FACTOR, attempt),
-    RETRY_CONFIG.MAX_DELAY
-  );
-  return delay;
-};
-
-/**
  * API 요청을 실행하고 응답을 검증하는 함수
  * @param {string} url - API 엔드포인트 URL
  * @param {Object} config - fetch API 설정 객체
- * @param {number} attempt - 현재 시도 횟수
  * @returns {Promise<any>} API 응답 데이터
  * @throws {Error} API 요청 실패 시 에러 발생
  */
-const executeRequest = async (url, config, attempt = 0) => {
+const executeRequest = async (url, config) => {
   try {
     const response = await fetch(url, config);
     if (!response.ok) {
-      throw new Error(
-        `Request failed with status ${response.status}: ${ERROR_MESSAGES[ERROR_TYPES.FETCH_FAILED]}`
-      );
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-
-    // 204 No Content 응답의 경우 데이터 없이 성공 처리
-    if (response.status === HTTP_STATUS.NO_CONTENT) {
-      return true;
-    }
-
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error(`API 요청 실패 (시도 ${attempt + 1}/${RETRY_CONFIG.MAX_RETRIES + 1}):`, error);
-
-    // 최대 재시도 횟수를 초과한 경우 에러 발생
-    if (attempt >= RETRY_CONFIG.MAX_RETRIES) {
-      throw error;
+    // 에러 타입 구분
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      error.name = 'NetworkError';
+    } else if (error.name === 'AbortError') {
+      error.name = 'TimeoutError';
+    } else if (error.message.includes('HTTP error! status: 5')) {
+      error.name = 'ServerError';
     }
 
-    // 다음 시도 전 대기
-    const delay = calculateDelay(attempt);
-    await new Promise(resolve => setTimeout(resolve, delay));
-
-    // 재시도
-    return executeRequest(url, config, attempt + 1);
+    throw error;
   }
 };
 
