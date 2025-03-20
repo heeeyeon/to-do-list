@@ -17,7 +17,7 @@ body {
 .container {
   background-color: #fafaf8;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
   margin: 0 auto;
   max-width: 800px;
   padding: 30px;
@@ -50,7 +50,7 @@ button {
 }
 
 button:hover {
-  box-shadow: 0 2px 8px rgb(0 0 0 / 20%);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.2);
   transform: translateY(-2px);
 }
 
@@ -75,7 +75,7 @@ button:hover {
   align-items: center;
   background: #fafaf8;
   border-radius: 10px;
-  box-shadow: 0 2px 5px rgb(0 0 0 / 10%);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
   display: flex;
   justify-content: space-between;
   margin: 10px 0;
@@ -84,7 +84,7 @@ button:hover {
 }
 
 .todo-item:hover {
-  box-shadow: 0 4px 10px rgb(0 0 0 / 15%);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.15);
   transform: translateY(-2px);
 }
 
@@ -123,12 +123,12 @@ button:hover {
 /* title의 cursor와 hover 효과는 제거 */
 .todo-content .edit-icon {
   cursor: pointer;
-  opacity: 0%;
+  opacity: 0;
   transition: opacity 0.2s ease;
 }
 
 .todo-content:hover .edit-icon {
-  opacity: 100%;
+  opacity: 1;
 }
 
 .todo-item.completed .edit-icon {
@@ -199,7 +199,7 @@ button:hover {
 /* 모달 */
 .modal {
   backdrop-filter: blur(5px);
-  background-color: rgb(0 0 0 / 50%);
+  background-color: rgb(0 0 0 / 0.5);
   display: none;
   height: 100%;
   left: 0;
@@ -212,7 +212,7 @@ button:hover {
 .modal-content {
   background-color: #fafaf8;
   border-radius: 15px;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 20%);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 0.2);
   left: 50%;
   max-width: 90%;
   min-width: 300px;
@@ -306,7 +306,7 @@ button:hover {
 }
 
 .close-button:focus {
-  box-shadow: 0 0 0 2px rgb(33 150 243 / 30%);
+  box-shadow: 0 0 0 2px rgb(33 150 243 / 0.3);
   outline: none;
 }
 
@@ -316,7 +316,7 @@ button:hover {
   color: white;
   left: 50%;
   min-width: 200px;
-  opacity: 0%;
+  opacity: 0;
   padding: 10px;
   position: fixed;
   text-align: center;
@@ -327,13 +327,13 @@ button:hover {
 }
 
 .message-container.show {
-  opacity: 100%;
+  opacity: 1;
   transform: translateX(-50%) translateY(0);
   visibility: visible;
 }
 
 .message-container.hide {
-  opacity: 0%;
+  opacity: 0;
   transform: translateX(-50%) translateY(20px);
 }
 
@@ -379,7 +379,7 @@ button:hover {
 /* 로딩 메시지 */
 .loading-message {
   align-items: center;
-  background-color: rgb(255 255 255 / 90%);
+  background-color: rgb(255 255 255 / 0.9);
   border-radius: 8px;
   color: #2196f3;
   display: flex;
