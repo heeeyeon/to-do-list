@@ -156,7 +156,7 @@ function saveEdit(input, todoId, onEdit) {
   }
 
   if (newValue !== input.dataset.originalValue) {
-    onEdit(todoId, newValue, null);
+    onEdit(todoId, newValue);
   } else {
     cancelEdit(input, todoId, onEdit);
   }
