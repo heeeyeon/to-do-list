@@ -12,12 +12,6 @@
   "embeddedLanguageFormatting": "auto",
   "overrides": [
     {
-      "files": "*.json",
-      "options": {
-        "tabWidth": 4
-      }
-    },
-    {
       "files": ["*.html", "*.css", "*.scss", "*.less"],
       "options": {
         "tabWidth": 2,
