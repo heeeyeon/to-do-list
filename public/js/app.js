@@ -33,6 +33,11 @@ function setupEventListeners() {
     ui.modal.closeCreate();
   });
 
+  // 새 할일 모달 취소 버튼
+  safeAddListener('#closeCreateModalButton', 'click', () => {
+    ui.modal.closeCreate();
+  });
+
   // 다른 선택자도 사용 가능
   safeAddListener('.close-button', 'click', () => {
     ui.modal.closeCreate();
