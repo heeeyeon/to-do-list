@@ -4,7 +4,7 @@ import { API_CONFIG, ERROR_MESSAGES, ERROR_TYPES, HTTP_METHOD } from './config.j
  * API 요청에 필요한 설정을 생성하는 함수
  * @param {string} method - HTTP 메서드 (GET, POST, PATCH, DELETE 등)
  * @param {Object|null} body - 요청 본문 데이터 (POST, PATCH 요청의 경우)
- * @returns {Object} fetch API에 전달할 설정 객체
+ * @returns {Object} 가져오기 API에 전달할 구성 객체
  */
 const createRequestConfig = (method, body = null) => {
   const config = {
@@ -24,10 +24,11 @@ const createRequestConfig = (method, body = null) => {
 /**
  * API 요청을 실행하고 응답을 검증하는 함수
  * @param {string} url - API 엔드포인트 URL
- * @param {Object} config - fetch API 설정 객체
- * @returns {Promise<any>} API 응답 데이터
+ * @param {Object} config - 가져오기 API에 전달할 구성 객체
+ * @returns {Promise <any>} API 응답 데이터
  * @throws {Error} API 요청 실패 시 에러 발생
  */
+
 const executeRequest = async (url, config) => {
   try {
     const response = await fetch(url, config);
