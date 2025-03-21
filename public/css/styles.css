@@ -7,17 +7,17 @@
 
 /* 기본 레이아웃 */
 body {
-  background-color: #f5f5f5;
-  color: #333;
+  background-color: var(--color-text-bright);
+  color: var(--color-text-primary);
   font-family: "Segoe UI", "Noto Sans KR", sans-serif;
   line-height: 1.6;
   padding: 20px;
 }
 
 .container {
-  background-color: #fafaf8;
+  background-color: var(--color-text-bright);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+  box-shadow: 0 2px 8px var(-color-shadow);
   margin: 0 auto;
   max-width: 800px;
   padding: 30px;
@@ -25,7 +25,7 @@ body {
 
 /* 타이포그래피 */
 h1 {
-  color: #2196f3;
+  color: var(-color-primary-900);
   font-size: 2.5em;
   font-weight: 300;
   margin-bottom: 30px;
@@ -46,23 +46,23 @@ button {
   cursor: pointer;
   font-size: 1em;
   padding: 10px 20px;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 button:hover {
-  box-shadow: 0 2px 8px rgb(0 0 0 / 0.2);
+  box-shadow: 0 2px 8px var(--color-shadow-2);
   transform: translateY(-2px);
 }
 
 .add-button {
-  background-color: #2196f3;
-  color: #fafaf8;
+  background-color: var(--color-button-primary);
+  color: var(--color-text-bright);
   font-size: 1.1em;
   padding: 12px 24px;
 }
 
 .add-button:hover {
-  background-color: #1976d2;
+  background-color: var(--color-button-primary-hover);
 }
 
 .todo-list {
@@ -72,23 +72,23 @@ button:hover {
 
 .todo-item {
   align-items: center;
-  background: #fafaf8;
+  background: var(--color-bg-primary);
   border-radius: 10px;
-  box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+  box-shadow: 0 2px 5px var(--color-shadow);
   display: flex;
   justify-content: space-between;
   margin: 10px 0;
   padding: 15px;
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .todo-item:hover {
-  box-shadow: 0 4px 10px rgb(0 0 0 / 0.15);
+  box-shadow: 0 4px 10px var(--color-shadow);
   transform: translateY(-2px);
 }
 
 .todo-item.completed {
-  background-color: #f8f9fa;
+  background: var(--color-bg-tertiary);
 }
 
 .todo-content .title {
@@ -98,7 +98,7 @@ button:hover {
 }
 
 .todo-item.completed .title {
-  color: #6c757d;
+  color: var(--color-text-disabled);
   text-decoration: line-through;
 }
 
@@ -111,17 +111,17 @@ button:hover {
   gap: 10px;
   margin-right: 15px;
   padding: 5px 10px;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--transition-fast);
 }
 
 .todo-content:hover {
-  background-color: #f0f0f0;
+  background-color: var(--color-bg-secondary);
 }
 
 .todo-content .edit-icon {
   cursor: pointer;
   opacity: 0.2;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--transition-fast);
 }
 
 .todo-content:hover .edit-icon {
@@ -129,11 +129,11 @@ button:hover {
 }
 
 .todo-item.completed .edit-icon {
-  color: #6c757d;
+  color: var(--color-text-disabled);
 }
 
 .edit-input {
-  border: 2px solid #2196f3;
+  border: 2px solid var(--color-info-300);
   border-radius: 4px;
   font-family: inherit;
   font-size: 1.1em;
@@ -143,7 +143,7 @@ button:hover {
 }
 
 .todo-content .status {
-  color: #666;
+  color: var(--color-text-secondary);
   font-size: 0.9em;
 }
 
@@ -158,44 +158,44 @@ button:hover {
 }
 
 .toggle-btn {
-  background-color: #4caf50;
-  color: #fafaf8;
+  background-color: var(--color-success-300);
+  color: var(--color-text-bright);
 }
 
 .toggle-btn:hover {
-  background-color: #388e3c;
+  background-color: var(--color-success-500);
 }
 
 .toggle-btn.incomplete {
-  background-color: #ff9800;
+  background-color: var(--color-warning-500);
 }
 
 .toggle-btn.incomplete:hover {
-  background-color: #f57c00;
+  background-color: var(--color-warning-300);
 }
 
 .edit-btn {
-  background-color: #2196f3;
-  color: #fafaf8;
+  background-color: var(--color-info-300);
+  color: var(--color-text-bright);
 }
 
 .edit-btn:hover {
-  background-color: #1976d2;
+  background-color: var(--color-info-500);
 }
 
 .delete-btn {
-  background-color: #f44336;
-  color: #fafaf8;
+  background-color: var(--color-danger-300);
+  color: var(--color-text-bright);
 }
 
 .delete-btn:hover {
-  background-color: #d32f2f;
+  background-color: var(--color-danger-500);
 }
 
 /* 모달 */
 .modal {
   backdrop-filter: blur(5px);
-  background-color: rgb(0 0 0 / 0.5);
+  background-color: var(--color-shadow);
   display: none;
   height: 100%;
   left: 0;
@@ -206,9 +206,9 @@ button:hover {
 }
 
 .modal-content {
-  background-color: #fafaf8;
+  background-color: var(--color-text-bright);
   border-radius: 15px;
-  box-shadow: 0 4px 20px rgb(0 0 0 / 0.2);
+  box-shadow: 0 4px 20px var(--color-shadow-2);
   left: 50%;
   max-width: 90%;
   min-width: 300px;
@@ -232,7 +232,7 @@ button:hover {
 }
 
 .modal-content h2 {
-  color: #2196f3;
+  color: var(--color-info-300);
   font-weight: 500;
   margin-bottom: 20px;
 }
@@ -243,12 +243,12 @@ button:hover {
   font-size: 1em;
   margin: 10px 0;
   padding: 12px;
-  transition: border-color 0.3s ease;
+  transition: border-color var(--transition-normal);
   width: 100%;
 }
 
 .modal-content input[type='text']:focus {
-  border-color: #2196f3;
+  border-color: var(--color-info-300);
   outline: none;
 }
 
@@ -260,21 +260,21 @@ button:hover {
 }
 
 .modal-content .submit {
-  background-color: #4caf50;
-  color: #fafaf8;
+  background-color: var(--color-success-300);
+  color: var(--color-text-bright);
 }
 
 .modal-content .submit:hover {
-  background-color: #388e3c;
+  background-color: var(--color-success-500);
 }
 
 .modal-content .cancel {
-  background-color: #f44336;
-  color: #fafaf8;
+  background-color: var(--color-danger-300);
+  color: var(--color-text-bright);
 }
 
 .modal-content .cancel:hover {
-  background-color: #d32f2f;
+  background-color: var(--color-danger-500);
 }
 
 .close-button {
@@ -282,7 +282,7 @@ button:hover {
   background: none;
   border: none;
   border-radius: 50%;
-  color: #666;
+  color: var(--color-text-secondary);
   cursor: pointer;
   display: flex;
   font-size: 1.5rem;
@@ -291,25 +291,25 @@ button:hover {
   line-height: 1;
   margin-top: -2px;
   padding: 0;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   width: 32px;
 }
 
 .close-button:hover {
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
   transform: rotate(90deg);
 }
 
 .close-button:focus {
-  box-shadow: 0 0 0 2px rgb(33 150 243 / 0.3);
+  box-shadow: 0 0 0 2px var(--color-info-100);
   outline: none;
 }
 
 .message-container {
-  background-color: black;
+  background-color: var(--color-text-primary);
   border-radius: 5px;
-  color: white;
+  color: var(--color-text-bright);
   left: 50%;
   min-width: 200px;
   opacity: 0;
@@ -375,9 +375,9 @@ button:hover {
 /* 로딩 메시지 */
 .loading-message {
   align-items: center;
-  background-color: rgb(255 255 255 / 0.9);
+  background-color: var(--color-bg-secondary);
   border-radius: 8px;
-  color: #2196f3;
+  color: var(--color-info-300);
   display: flex;
   font-size: 1.2em;
   height: 100px;
@@ -389,9 +389,9 @@ button:hover {
 
 .loading-message::after {
   animation: loading 1s infinite linear;
-  border: 3px solid #f3f3f3;
+  border: 3px solid var(--color-border-primary);
   border-radius: 50%;
-  border-top: 3px solid #2196f3;
+  border-top: 3px solid var(--color-info-300);
   content: '';
   height: 20px;
   left: calc(50% + 60px);
