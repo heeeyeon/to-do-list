@@ -1,4 +1,4 @@
-import { ERROR_MESSAGES } from './config.js';
+import { ERROR_MESSAGES, ERROR_TYPES } from './config.js';
 import { $, $$, createElement } from './utils.js';
 
 // DOM 요소 참조
@@ -49,11 +49,25 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
     const li = createElement('li', {
       className: `todo-item ${todo.completed ? 'completed' : ''}`,
       id: `todo-${todoId}`,
+      attributes: {
+        'data-todo-id': todoId,
+      },
     });
 
     const todoContent = createElement('div', {
       className: 'todo-content',
       onClick: () => makeEditable(titleSpan, todoId, onEdit),
+      attributes: {
+        role: 'button',
+        tabindex: '0',
+        'aria-label': `${todo.title} 편집하기`,
+      },
+      onKeyDown: e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          makeEditable(titleSpan, todoId, onEdit);
+        }
+      },
     });
 
     const titleSpan = createElement('span', {
@@ -63,19 +77,38 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
 
     const editIcon = createElement('span', {
       className: 'edit-icon',
-      text: '✏️',
+      attributes: {
+        'aria-hidden': 'true',
+      },
     });
 
+    // SVG 아이콘 추가하기
+    editIcon.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+      </svg>`;
     const buttonsDiv = createElement('div', { className: 'todo-buttons' });
     const toggleButton = createElement('button', {
       className: `toggle-btn ${todo.completed ? '' : 'incomplete'}`,
-      text: todo.completed ? '✓ 완료됨' : '○ 미완료',
+      attributes: {
+        'aria-pressed': todo.completed ? 'true' : 'false',
+        'aria-label': todo.completed
+          ? '완료됨, 클릭하여 미완료로 표시'
+          : '미완료, 클릭하여 완료로 표시',
+      },
       onClick: () => onToggle(todoId, !todo.completed),
     });
 
+    // 버튼 내용 개선
+    toggleButton.innerHTML = `
+              <span class="toggle-icon" aria-hidden="true">${todo.completed ? '✅' : '🟨'}</span>
+              <span class="toggle-text">${todo.completed ? '완료됨' : '미완료'}</span>
+            `;
     const deleteButton = createElement('button', {
       className: 'delete-btn',
       text: '삭제',
+      attributes: {
+        'aria-label': `${todo.title} 삭제`,
+      },
       onClick: () => {
         if (confirm(`"${todo.title}" 항목을 삭제하시겠습니까?`)) {
           onDelete(todoId);
@@ -97,6 +130,9 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
     return createElement('li', {
       className: 'todo-item error',
       text: '오류가 발생했습니다. 다시 시도해주세요.',
+      attributes: {
+        role: 'alert',
+      },
     });
   }
 }
@@ -228,6 +264,24 @@ function saveEdit(input, todoId, onEdit) {
 
   if (newValue !== input.dataset.originalValue) {
     onEdit(todoId, newValue);
+    try {
+      onEdit(todoId, newValue).catch(error => {
+        // 오류 발생 시 사용자에게 알림
+        showMessage(ERROR_MESSAGES[ERROR_TYPES.UPDATE_FAILED]);
+        console.error('할일 업데이트 오류:', error);
+
+        // 편집 상태 유지 (오류 발생 시 원래 편집 모드로 돌아감)
+        const parent = input.parentElement;
+        const currentSpan = parent.querySelector('.title');
+        if (currentSpan) {
+          makeEditable(currentSpan, todoId, onEdit);
+        }
+      });
+    } catch (error) {
+      // 동기적 오류 처리
+      showMessage(ERROR_MESSAGES[ERROR_TYPES.UPDATE_FAILED]);
+      console.error('할일 업데이트 오류:', error);
+    }
   } else {
     cancelEdit(input, todoId, onEdit);
   }
