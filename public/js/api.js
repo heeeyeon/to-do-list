@@ -80,14 +80,8 @@ export const createTodoItem = async title => {
   }
 
   const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}`;
-  const todos = await fetchTodos();
-  const maxId = todos.reduce((max, todo) => {
-    const currentId = Number(todo.id);
-    return currentId > max ? currentId : max;
-  }, 0);
 
   const newTodo = {
-    id: String(maxId + 1),
     title,
     completed: false,
   };
