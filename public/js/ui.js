@@ -209,7 +209,6 @@ function makeEditable(element, todoId, onEdit) {
 }
 
 /**
- /**
  * todo 항목의 편집된 제목을 저장합니다.
  *
  * 입력 값을 trim 처리한 후, 새 값이 유효하며 원래 값과 다른지 확인합니다.
@@ -235,15 +234,14 @@ function saveEdit(input, todoId, onEdit) {
 }
 
 /**
- /**  
- * 편집 모드의 입력 요소를 원래의 편집 불가능한 상태로 되돌려 todo 제목의 인라인 편집을 취소합니다.  
- *  
- * 이 함수는 입력 요소의 dataset에 저장된 원래 제목을 사용해 클릭 가능한 새 span 요소를 생성합니다.  
- * 해당 span을 클릭하면 제공된 콜백 함수가 호출되어 편집이 다시 활성화됩니다.  
- *  
- * @param {HTMLInputElement} input - 원래 제목이 dataset에 저장된, 편집 모드의 입력 요소입니다.  
- * @param {string|number} todoId - todo 항목의 식별자입니다.  
- * @param {Function} onEdit - 제목 클릭 시 편집을 재활성화하기 위한 콜백 함수입니다.  
+ * 편집 모드의 입력 요소를 원래의 편집 불가능한 상태로 되돌려 todo 제목의 인라인 편집을 취소합니다.
+ *
+ * 이 함수는 입력 요소의 dataset에 저장된 원래 제목을 사용해 클릭 가능한 새 span 요소를 생성합니다.
+ * 해당 span을 클릭하면 제공된 콜백 함수가 호출되어 편집이 다시 활성화됩니다.
+ *
+ * @param {HTMLInputElement} input - 원래 제목이 dataset에 저장된, 편집 모드의 입력 요소입니다.
+ * @param {string|number} todoId - todo 항목의 식별자입니다.
+ * @param {Function} onEdit - 제목 클릭 시 편집을 재활성화하기 위한 콜백 함수입니다.
  */
 function cancelEdit(input, todoId, onEdit) {
   const span = createElement('span', {
