@@ -61,7 +61,11 @@ export function addMultipleEventListeners(elements, eventType, handler) {
     console.warn('addMultipleEventListeners: elements가 제공되지 않았습니다.');
     return;
   }
-  if (elements instanceof NodeList) {
+  if (
+    elements instanceof NodeList ||
+    elements instanceof HTMLCollection ||
+    Array.isArray(elements)
+  ) {
     elements.forEach(element => element.addEventListener(eventType, handler));
   } else {
     if (!(elements instanceof Element)) {
