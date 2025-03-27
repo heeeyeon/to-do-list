@@ -361,6 +361,12 @@ export function addTodoToList(todo, handlers) {
  */
 export function showMessage(message) {
   const messageContainer = $$('.message-container')[0];
+
+  // 오류 메시지인 경우 role="alert", 일반 메시지인 경우 role="status" 추가
+  const isError = message.includes('실패') || message.includes('오류') || message.includes('없');
+  messageContainer.setAttribute('role', isError ? 'alert' : 'status');
+  messageContainer.setAttribute('aria-live', isError ? 'assertive' : 'polite');
+
   messageContainer.innerText = message;
   messageContainer.classList.add('show'); // 애니메이션 적용
 
