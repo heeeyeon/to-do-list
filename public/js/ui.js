@@ -87,9 +87,20 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
     });
 
     // SVG 아이콘 추가하기
-    editIcon.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    editIcon.innerHTML = `
+      <svg
+        width="16" height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        role="img"
+        aria-label="편집 아이콘"
+      >
+
         <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-      </svg>`;
+      </svg>
+    `;
     const buttonsDiv = createElement('div', { className: 'todo-buttons' });
     const toggleButton = createElement('button', {
       className: `toggle-btn ${todo.completed ? '' : 'incomplete'}`,
