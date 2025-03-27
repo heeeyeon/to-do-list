@@ -318,7 +318,9 @@ function cancelEdit(input, todoId, onEdit) {
 export function validateTitle(title) {
   const trimmedTitle = title.trim();
   if (!trimmedTitle) {
-    alert(ERROR_MESSAGES.EMPTY_TITLE);
+    showMessage(ERROR_MESSAGES[ERROR_TYPES.EMPTY_TITLE]);
+    // 입력 필드에 포커스 유지
+    elements.newTodoTitle.focus();
     return false;
   }
   return true;

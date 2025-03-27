@@ -320,6 +320,7 @@ button:hover {
   transform: translateX(-50%) translateY(20px);
   transition: opacity 0.5s, transform 0.5s;
   visibility: hidden;
+  z-index: 1111;
 }
 
 .message-container.show {
