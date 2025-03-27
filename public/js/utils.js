@@ -1,14 +1,15 @@
 import { ERROR_MESSAGES } from './config.js';
 
 /**
- * 오류를 처리합니다. 오류 유형을 콘솔에 기록하고, 이에 맞는 사용자 친화적 경고 메시지를 표시합니다.
+ * Handles an error by logging it with its type and displaying a corresponding user-friendly alert message.
  *
- * 이 함수는 제공된 오류 유형을 포함하는 오류 메시지를 콘솔에 출력한 후,
- * ERROR_MESSAGES 매핑에서 해당 오류 유형에 맞는 사용자 친화적 메시지를 검색합니다.
- * 특정 메시지가 없을 경우, 오류 객체의 메시지 또는 기본 오류 메시지를 사용하여 알림창에 표시합니다.
+ * This function logs an error message that includes the provided error type and the error object to the console.
+ * It then retrieves a user-friendly message from the ERROR_MESSAGES configuration mapping using the error type.
+ * If no corresponding message is found, it falls back to the error object's message or a default message before
+ * displaying it in an alert dialog.
  *
- * @param {*} error - 포착된 오류 객체.
- * @param {string} errorType - 구성에서 특정 오류 메시지를 검색하기 위한 키.
+ * @param {*} error - The caught error object.
+ * @param {string} errorType - The key used to look up a specific error message in the configuration.
  */
 export function handleError(error, errorType) {
   console.error(`${errorType} 실패:`, error);
@@ -17,20 +18,20 @@ export function handleError(error, errorType) {
 }
 
 /**
- * 제공된 CSS 선택자와 일치하는 첫 번째 DOM 요소를 찾아 반환합니다.
+ * Returns the first DOM element that matches the given CSS selector.
  *
- * @param {string} selector - 문서를 쿼리하기 위한 CSS 선택자.
- * @returns {Element|null} 일치하는 첫 번째 DOM 요소 또는 요소가 없으면 null을 반환합니다.
+ * @param {string} selector - A valid CSS selector for querying the document.
+ * @returns {Element|null} The first matching DOM element, or null if no element matches.
  */
 export function $(selector) {
   return document.querySelector(selector);
 }
 
 /**
- * 지정된 CSS 선택자와 일치하는 모든 DOM 요소를 선택하여 반환합니다.
+ * Selects and returns all DOM elements that match the specified CSS selector.
  *
- * @param {string} selector - 문서 내에서 요소를 찾기 위한 유효한 CSS 선택자.
- * @returns {NodeListOf <Element>} 일치하는 모든 DOM 요소를 포함하는 NodeList를 반환합니다.
+ * @param {string} selector - A valid CSS selector used to find elements within the document.
+ * @returns {NodeListOf<Element>} A NodeList containing all matching DOM elements.
  */
 
 export function $$(selector) {
@@ -38,22 +39,22 @@ export function $$(selector) {
 }
 
 /**
- * 하나 이상의 DOM 요소에 이벤트 리스너를 추가합니다.
+ * Adds an event listener to one or more DOM elements.
  *
- * 제공된 요소가 NodeList인 경우, 각 요소에 이벤트 리스너가 추가됩니다.
- * 단일 Element인 경우 해당 요소에 직접 이벤트 리스너가 추가됩니다.
- * 요소가 제공되지 않거나 유효하지 않은 경우, 경고 메시지를 콘솔에 출력합니다.
+ * If the provided elements parameter is a collection (NodeList, HTMLCollection, or Array), the event listener is added to each element.
+ * If a single DOM element is provided, the event listener is attached directly.
+ * Logs a warning if the elements parameter is null or not a valid DOM element type.
  *
- * @param {NodeList|Element} elements - 이벤트 리스너를 추가할 대상 DOM 요소들.
- * @param {string} eventType - 추가할 이벤트의 종류 (예: 'click', 'submit', 'change').
- * @param {Function} handler - 이벤트 발생 시 실행할 콜백 함수.
+ * @param {(NodeList|HTMLCollection|Element|Array)} elements - The target element(s) for the event listener.
+ * @param {string} eventType - The type of event to listen for (e.g., 'click', 'submit', 'change').
+ * @param {Function} handler - The callback function to execute when the event is triggered.
  *
  * @example
- * // 단일 요소에 이벤트 리스너 추가 예시
+ * // Attach an event listener to a single element:
  * addMultipleEventListeners(submitButton, 'click', handleSubmit);
  *
  * @example
- * // 여러 요소에 이벤트 리스너 추가 예시
+ * // Attach an event listener to multiple elements:
  * addMultipleEventListeners(deleteButtons, 'click', handleDelete);
  */
 export function addMultipleEventListeners(elements, eventType, handler) {
@@ -77,16 +78,16 @@ export function addMultipleEventListeners(elements, eventType, handler) {
 }
 
 /**
- * 지정된 HTML 태그명을 사용하여 새로운 DOM 요소를 생성합니다.
+ * Creates a new DOM element using the specified HTML tag.
  *
- * 선택적으로, 해당 요소에 CSS 클래스 이름, 텍스트 내용, 클릭 이벤트 핸들러를 설정할 수 있습니다.
+ * Optionally applies a CSS class name, sets text content, and attaches a click event listener to the element.
  *
- * @param {string} tag - 새로 생성할 DOM 요소의 HTML 태그명.
- * @param {Object} [options] - 요소의 선택적 속성들을 포함하는 객체입니다.
- * @param {string} [options.className] - 요소에 적용할 CSS 클래스 이름.
- * @param {string} [options.text] - 요소에 설정할 텍스트 내용.
- * @param {Function} [options.onClick] - 클릭 이벤트 리스너로 사용할 콜백 함수.
- * @returns {HTMLElement} 새롭게 생성된 DOM 요소를 반환합니다.
+ * @param {string} tag - The HTML tag name for the new element.
+ * @param {Object} [options] - An optional object containing properties for the element.
+ * @param {string} [options.className] - The CSS class name to assign to the element.
+ * @param {string} [options.text] - The text content to set on the element.
+ * @param {Function} [options.onClick] - A callback to attach as a click event listener.
+ * @returns {HTMLElement} The newly created DOM element.
  */
 export function createElement(tag, { className, text, onClick } = {}) {
   const element = document.createElement(tag);
