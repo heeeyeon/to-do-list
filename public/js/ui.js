@@ -9,6 +9,10 @@ const elements = {
   loadingMessage: createElement('div', {
     className: 'loading-message',
     text: '로딩 중...',
+    attributes: {
+      role: 'status',
+      'aria-live': 'polite',
+    },
   }),
 };
 
