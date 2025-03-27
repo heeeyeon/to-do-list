@@ -4,23 +4,6 @@ import * as ui from './ui.js';
 import { $, addMultipleEventListeners, handleError } from './utils.js';
 
 /**
- * 할일 객체 배열에서 가장 큰 숫자 ID를 계산합니다.
- *
- * 제공된 할일 목록을 반복하면서 각 할일의 `id`를 숫자로 변환하고 가장 큰 값을 반환합니다.
- * 숫자가 아닌 `id` 값은 무시됩니다. 유효한 숫자 ID가 없으면 함수는 0을 반환합니다.
- *
- * @param {Array <Object>} todos - 각 객체에 `id` 속성이 포함된 할일 아이템 목록입니다.
- * @returns {number} 할일 목록에서 찾은 최대 숫자 ID.
- */
-
-function calculateMaxId(todos) {
-  return todos.reduce((max, todo) => {
-    const currentId = Number(todo.id);
-    return isNaN(currentId) ? max : Math.max(currentId, max);
-  }, 0);
-}
-
-/**
  * Todo 애플리케이션에서 UI 상호작용을 위한 이벤트 리스너를 등록합니다.
  *
  * 이 함수는 생성 할일 모달을 열고 닫기 위한 다양한 요소에 이벤트 핸들러를 부착하며,
@@ -85,11 +68,11 @@ function setupEventListeners() {
  * UI에 표시된 할일 목록을 새로 고칩니다.
  *
  * 강제 새로고침이 요청되지 않고 캐시된 할일 목록이 존재하면, API 호출 없이 마지막 캐시된 할일의 ID를 반환합니다.
- * 그렇지 않으면 로딩 표시기를 보여주고, API에서 할일 목록을 가져와서 그 중 최대 ID를 계산한 후 UI를 업데이트합니다.
+ * 그렇지 않으면 로딩 표시기를 보여주고, API에서 할일 목록을 가져와서 UI를 업데이트합니다.
  * API 호출 중 오류 발생 시, 오류를 처리하고 '0'을 반환합니다.
  *
  * @param {boolean} [forceRefresh=false] - true인 경우, 캐시된 데이터와 관계없이 API 호출을 강제합니다.
- * @returns {number|string} 새로 가져온 할일 목록에서 찾은 최대 ID, 또는 캐시된 마지막 할일의 ID, 오류 발생 시 '0'.
+ * @returns {number} 할일 목록을 가져와서 UI업데이트 성공시 1 오류 발생 시 0.
  */
 async function refreshTodos(forceRefresh = false) {
   // 강제 새로고침이 필요하지 않고 이미 데이터가 있는 경우 캐시된 데이터를 반환
@@ -101,7 +84,6 @@ async function refreshTodos(forceRefresh = false) {
   try {
     ui.showLoading();
     const todos = await api.fetchTodos();
-    const maxId = calculateMaxId(todos);
 
     ui.displayTodos(todos, {
       onEdit: handleEdit,
@@ -109,10 +91,10 @@ async function refreshTodos(forceRefresh = false) {
       onDelete: handleDelete,
     });
 
-    return maxId;
+    return 1;
   } catch (error) {
     handleError(error, 'FETCH_FAILED');
-    return '0';
+    return 0;
   } finally {
     ui.hideLoading();
   }
