@@ -25,6 +25,16 @@ export const modal = {
     elements.createModal.style.display = 'block';
     elements.newTodoTitle.value = '';
     elements.newTodoTitle.focus();
+
+    // ESC 키로 모달 닫기 기능 추가
+    const handleEscape = e => {
+      if (e.key === 'Escape') {
+        this.closeCreate();
+        document.removeEventListener('keydown', handleEscape);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
   },
 
   closeCreate() {
