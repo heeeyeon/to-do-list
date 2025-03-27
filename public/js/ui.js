@@ -263,7 +263,6 @@ function saveEdit(input, todoId, onEdit) {
   }
 
   if (newValue !== input.dataset.originalValue) {
-    onEdit(todoId, newValue);
     try {
       onEdit(todoId, newValue).catch(error => {
         // 오류 발생 시 사용자에게 알림
