@@ -1,3 +1,9 @@
+/**
+ * Todo 애플리케이션의 UI 동작을 담당하는 모듈입니다.
+ * 이 모듈은 사용자 인터페이스 업데이트, 사용자 입력 이벤트 처리 및
+ * todo 항목의 생성, 편집, 삭제, 상태 전환 등의 작업을 수행합니다.
+ * 각 함수 및 메서드는 상세한 JSDoc 주석으로 문서화되어 있습니다.
+ */
 import { ERROR_MESSAGES, ERROR_TYPES } from './config.js';
 import { $, $$, createElement } from './utils.js';
 
@@ -20,13 +26,24 @@ const elements = {
 let todosCache = [];
 
 // 모달 관련 함수들
+/**
+ * 모듈 내 todo 생성 모달 제어와 관련된 함수들을 포함하는 객체입니다.
+ */
 export const modal = {
+  /**
+   * todo 생성 모달을 열고 초기화합니다.
+   *
+   * 모달을 보이도록 설정하고, 입력 필드를 초기화한 후 포커스를 설정합니다.
+   * 또한, ESC 키 이벤트 감지를 통해 모달을 닫을 수 있도록 리스너를 등록합니다.
+   *
+   * @function
+   */
   openCreate() {
     elements.createModal.style.display = 'block';
     elements.newTodoTitle.value = '';
     elements.newTodoTitle.focus();
 
-    // ESC 키로 모달 닫기 기능 추가
+    // ESC 키로 모달 닫기
     const handleEscape = e => {
       if (e.key === 'Escape') {
         this.closeCreate();
@@ -37,6 +54,13 @@ export const modal = {
     document.addEventListener('keydown', handleEscape);
   },
 
+  /**
+   * todo 생성 모달을 닫고 입력 필드를 초기화합니다.
+   *
+   * 모달의 표시를 숨기고, 입력 필드의 내용을 비워 다음 입력을 준비합니다.
+   *
+   * @function
+   */
   closeCreate() {
     elements.createModal.style.display = 'none';
     elements.newTodoTitle.value = '';
@@ -44,17 +68,19 @@ export const modal = {
 };
 
 /**
- * todo 항목에 대한 DOM 리스트 아이템을 생성하며, 인라인 편집 및 동작 버튼을 포함합니다.
+ * todo 항목에 대한 DOM 리스트 아이템을 생성하여 반환합니다.
  *
- * 반환되는 리스트 아이템은 todo의 제목을 표시하고, 편집, 완료 상태 전환 및 확인 후 삭제를 위한 인터랙티브 컨트롤을 제공합니다.
- * 제목을 클릭하면 제공된 편집 핸들러를 통해 인라인 편집이 시작됩니다. 요소 생성 중 오류가 발생하면,
- * 오류를 로그에 기록한 후 실패를 나타내는 대체 리스트 아이템을 반환합니다.
+ * 주어진 todo 객체를 기반으로 리스트 아이템을 생성하며, todo 제목, 인라인 편집 기능,
+ * 완료 상태 전환, 삭제 기능 등 다양한 인터랙티브 요소들을 포함합니다.
+ * DOM 요소 생성 과정에서 오류가 발생하면, 오류 메시지를 콘솔에 기록하고
+ * 오류를 나타내는 리스트 아이템을 반환합니다.
  *
- * @param {Object} todo - 최소한 `id`, `title`, 그리고 불린형 `completed` 플래그를 포함하는 todo 항목 객체.
- * @param {Function} onEdit - todo 제목 편집을 시작하기 위한 콜백 함수.
- * @param {Function} onToggle - todo의 완료 상태 전환을 위한 콜백 함수.
- * @param {Function} onDelete - 확인 후 todo 항목 삭제를 위한 콜백 함수.
- * @returns {HTMLElement} todo 항목을 나타내는 리스트 아이템 요소, 또는 오류 발생 시 대체 요소를 반환합니다.
+ * @param {Object} todo - 생성할 todo 항목 객체. `id`, `title`, `completed` 속성을 포함해야 합니다.
+ * @param {Object} handlers - todo 관련 이벤트 핸들러를 담은 객체.
+ *   @property {Function} onEdit - todo 제목 편집을 위한 콜백 함수.
+ *   @property {Function} onToggle - todo 완료 상태 전환을 위한 콜백 함수.
+ *   @property {Function} onDelete - todo 삭제를 위한 콜백 함수.
+ * @returns {HTMLElement} 생성된 todo 아이템 DOM 요소를 반환합니다.
  */
 function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
   try {
@@ -97,8 +123,7 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
     });
 
     // SVG 아이콘 추가하기
-    editIcon.innerHTML = `
-      <svg
+    editIcon.innerHTML = ` <svg
         width="16" height="16"
         viewBox="0 0 24 24"
         fill="none"
@@ -107,10 +132,8 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
         role="img"
         aria-label="편집 아이콘"
       >
-
         <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-      </svg>
-    `;
+      </svg> `;
     const buttonsDiv = createElement('div', { className: 'todo-buttons' });
     const toggleButton = createElement('button', {
       className: `toggle-btn ${todo.completed ? '' : 'incomplete'}`,
@@ -124,10 +147,7 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
     });
 
     // 버튼 내용 개선
-    toggleButton.innerHTML = `
-              <span class="toggle-icon" aria-hidden="true">${todo.completed ? '✅' : '🟨'}</span>
-              <span class="toggle-text">${todo.completed ? '완료됨' : '미완료'}</span>
-            `;
+    toggleButton.innerHTML = ` <span class="toggle-icon" aria-hidden="true">${todo.completed ? '✅' : '🟨'}</span> <span class="toggle-text">${todo.completed ? '완료됨' : '미완료'}</span> `;
     const deleteButton = createElement('button', {
       className: 'delete-btn',
       text: '삭제',
@@ -135,7 +155,7 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
         'aria-label': `${todo.title} 삭제`,
       },
       onClick: () => {
-        if (confirm(`"${todo.title}" 항목을 삭제하시겠습니까?`)) {
+        if (confirm(`"\${todo.title}" 항목을 삭제하시겠습니까?`)) {
           onDelete(todoId);
         }
       },
@@ -146,6 +166,8 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
     buttonsDiv.appendChild(toggleButton);
     buttonsDiv.appendChild(deleteButton);
 
+    li.appendChild(todoContent);
+    li.appendChild(buttonsDiv);
     li.appendChild(todoContent);
     li.appendChild(buttonsDiv);
 
@@ -163,29 +185,42 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
 }
 
 /**
- * todo 리스트에 로딩 메시지 요소를 추가합니다.
+ * Todo 리스트에 로딩 메시지 요소를 추가하여 로딩 상태를 사용자에게 표시합니다.
  *
- * 이 함수는 미리 정의된 로딩 메시지 요소를 todo 리스트 컨테이너에 추가하여 로딩 인디케이터를 표시합니다.
+ * - 미리 정의된 로딩 메시지 DOM 요소를 이용하여, 데이터 로딩 중임을 사용자에게 알립니다.
+ * - 만약 todo 리스트 컨테이너 요소를 찾지 못할 경우, 추가적인 오류 처리가 필요할 수 있습니다.
+ *
+ * @returns {void}
  */
 export function showLoading() {
   elements.todoList.appendChild(elements.loadingMessage);
 }
 
 /**
- * DOM에서 로딩 메시지 요소를 제거하여 숨깁니다.
+ * UI에서 로딩 메시지 요소를 제거하여 로딩 상태 표시를 종료합니다.
+ *
+ * - 로딩이 완료된 후, 사용자가 정상적으로 인터페이스를 사용할 수 있도록 로딩 인디케이터를 제거합니다.
+ * - 로딩 메시지 DOM 요소가 없을 경우, 별도의 동작 없이 종료됩니다.
+ *
+ * @returns {void}
  */
 export function hideLoading() {
   elements.loadingMessage.remove();
 }
 
 /**
- * 사용자 인터페이스에 todo 항목들의 리스트를 렌더링합니다.
+ * Todo 항목 배열을 받아 UI에 리스트를 렌더링하고, 내부 캐시를 업데이트합니다.
  *
- * 현재 리스트를 비우고, createTodoItem 함수를 통해 새로운 todo 요소들을 생성한 후 화면에 추가합니다.
- * 내부 캐시는 현재의 todo 상태를 반영하도록 업데이트됩니다.
+ * - 기존 todo 리스트를 초기화하고, 각 항목에 대해 createTodoItem 함수를 호출하여 DOM 요소를 생성합니다.
+ * - 인라인 편집, 완료 상태 토글 및 삭제와 같은 인터랙티브 이벤트 핸들러가 포함됩니다.
+ * - DOM 렌더링 중 발생할 수 있는 예외나 참조 오류에 대해, 내부적으로 에러 핸들링이 구현되어 있습니다.
  *
- * @param {Array} todos - 표시할 todo 객체들의 배열입니다.
- * @param {Object} handlers - 편집, 상태 전환, 삭제 등의 작업을 위한 콜백 함수들을 포함하는 객체입니다.
+ * @param {Array <Object>} todos - 렌더링할 todo 객체들의 배열.
+ * @param {Object} handlers - 이벤트 핸들러 객체. 포함된 이벤트:
+ *    - onEdit: (todoId: string, newTitle: string) => Promise 또는 void.
+ *    - onToggle: (todoId: string, newState: boolean) => void.
+ *    - onDelete: (todoId: string) => void.
+ * @returns {void}
  */
 export function displayTodos(todos, handlers) {
   elements.todoList.innerHTML = '';
@@ -196,24 +231,27 @@ export function displayTodos(todos, handlers) {
 }
 
 /**
- * 현재 캐시된 todo 항목들의 리스트를 반환합니다.
+ * 현재 메모리에 캐시된 todo 항목들의 배열을 반환합니다.
  *
- * @returns {Array} todo 항목들의 배열입니다.
+ * - 내부 캐시에 저장된 최신 todo 정보가 반영됩니다.
+ *
+ * @returns {Array<Object>} 캐시된 todo 객체 배열.
  */
 export function getTodos() {
   return todosCache;
 }
 
 /**
- * todo 항목의 제목을 인라인 편집할 수 있도록 편집 가능한 입력 필드를 생성합니다.
+ * 주어진 텍스트를 기반으로 인라인 편집 기능을 위한 입력 필드를 생성합니다.
  *
- * 제공된 현재 텍스트로 입력 필드를 설정하고, Enter 키 입력 시 편집을 저장, Escape 키 입력 시 편집을 취소하거나
- * 키보드 이벤트가 아닌 경우 blur 시 편집을 저장하도록 이벤트 핸들러를 구성합니다.
+ * - 생성된 입력 필드는 사용자가 todo 제목을 수정할 수 있도록 구성되며,
+ * - Enter 키 입력 시 편집 내용을 저장하고, Escape 키 입력 시 편집을 취소합니다.
+ * - 또한, blur 이벤트 발생 시에도 변경 사항을 확인하여 자동 저장 또는 취소 처리가 이루어집니다.
  *
- * @param {string} currentText - 입력 필드에 표시할 기존의 제목 텍스트입니다.
- * @param {number|string} todoId - 편집 중인 todo 항목의 고유 식별자입니다.
- * @param {Function} onEdit - 편집 저장 또는 취소 처리를 위한 콜백 함수입니다.
- * @returns {HTMLInputElement} 인라인 편집을 위한 설정된 입력 요소를 반환합니다.
+ * @param {string} currentText - 입력 필드에 표시될 기존 todo 제목.
+ * @param {number|string} todoId - 편집 대상 todo 항목의 고유 식별자.
+ * @param {Function} onEdit - 편집 완료 후 호출되는 콜백 (todoId, newValue)를 인자로 전달.
+ * @returns {HTMLInputElement} 구성된 인라인 편집용 입력 필드.
  */
 function createEditableInput(currentText, todoId, onEdit) {
   const input = createElement('input', {
@@ -235,7 +273,6 @@ function createEditableInput(currentText, todoId, onEdit) {
       e.preventDefault();
     }
   };
-
   input.onblur = () => {
     // 키보드 액션에 의한 blur 이벤트 처리 방지
     if (input.dataset.keyboardAction) {
@@ -251,14 +288,16 @@ function createEditableInput(currentText, todoId, onEdit) {
 }
 
 /**
- * 편집 불가능한 요소를 편집 가능한 입력 필드로 변환합니다.
+ * 주어진 DOM 요소(보통 span)를 인라인 편집 가능한 입력 필드로 변경합니다.
  *
- * 주어진 요소가 입력 필드가 아니면 원본 텍스트로 채워진 입력 요소로 교체됩니다.
- * 입력 필드는 자동으로 포커싱되고 텍스트가 선택되어 즉시 편집할 수 있게 합니다.
+ * - 요소가 이미 입력 필드일 경우, 변환을 수행하지 않습니다.
+ * - 편집 모드에서는 입력 필드에 자동으로 포커스를 주고, 텍스트 선택 상태로 전환하여 즉시 수정이 가능합니다.
+ * - Enter 및 Escape 키 이벤트에 따라 편집 저장 또는 취소 처리가 수행됩니다.
  *
- * @param {HTMLElement} element - 주로 span 요소인, todo 항목의 제목을 나타내는 DOM 요소입니다.
- * @param {string} todoId - todo 항목의 고유 식별자입니다.
- * @param {function} onEdit - 편집 동작을 처리하기 위한 콜백 함수입니다.
+ * @param {HTMLElement} element - 인라인 편집 전의 텍스트를 보여주는 DOM 요소.
+ * @param {string} todoId - 편집 대상 todo 항목의 고유 식별자.
+ * @param {Function} onEdit - 편집 완료 후 호출될 콜백 함수.
+ * @returns {void}
  */
 function makeEditable(element, todoId, onEdit) {
   if (element.tagName.toLowerCase() === 'input') return;
@@ -270,15 +309,17 @@ function makeEditable(element, todoId, onEdit) {
 }
 
 /**
- * todo 항목의 편집된 제목을 저장합니다.
+ * 인라인 편집 상태의 입력 필드에서 변경된 todo 제목을 저장합니다.
  *
- * 입력 값을 trim 처리한 후, 새 값이 유효하며 원래 값과 다른지 확인합니다.
- * 만약 trim된 값이 비어있거나 변경되지 않았다면 편집을 취소하고, 그렇지 않으면
- * todo의 식별자와 새 제목을 인자로 제공된 콜백 함수를 호출합니다.
+ * - 입력 값은 trim 처리 후, 원래 값과 비교하여 유효한 변경이 있는지 확인합니다.
+ * - 만약 입력 값이 비어있거나 변경되지 않았다면, 편집 취소를 자동으로 수행합니다.
+ * - 유효한 변경사항이 있을 경우, 제공된 onEdit 콜백을 호출하여 업데이트를 시도하며,
+ *   업데이트 실패 시 오류 메시지를 표시하고 편집 모드로 복귀하도록 합니다.
  *
- * @param {HTMLInputElement} input - 편집된 todo 제목을 포함하는 입력 요소입니다.
- * @param {string|number} todoId - 편집 중인 todo 항목의 식별자입니다.
- * @param {function} onEdit - 유효한 변경이 감지되었을 때 todo를 업데이트하는 콜백 함수입니다.
+ * @param {HTMLInputElement} input - 인라인 편집 중인 입력 필드.
+ * @param {string|number} todoId - 편집 대상 todo 항목의 식별자.
+ * @param {Function} onEdit - 변경 사항 저장 후 호출될 콜백 함수.
+ * @returns {void}
  */
 function saveEdit(input, todoId, onEdit) {
   const newValue = input.value.trim();
@@ -312,14 +353,15 @@ function saveEdit(input, todoId, onEdit) {
 }
 
 /**
- * 편집 모드의 입력 요소를 원래의 편집 불가능한 상태로 되돌려 todo 제목의 인라인 편집을 취소합니다.
+ * 인라인 편집을 취소하고, 원래의 텍스트 표시 요소(span)로 복구합니다.
  *
- * 이 함수는 입력 요소의 dataset에 저장된 원래 제목을 사용해 클릭 가능한 새 span 요소를 생성합니다.
- * 해당 span을 클릭하면 제공된 콜백 함수가 호출되어 편집이 다시 활성화됩니다.
+ * - 입력 필드의 dataset에 저장된 원래 값을 기반으로 새로운 span 요소를 생성합니다.
+ * - 생성된 span 요소는 클릭 시 다시 인라인 편집 모드로 전환될 수 있도록 콜백이 설정됩니다.
  *
- * @param {HTMLInputElement} input - 원래 제목이 dataset에 저장된, 편집 모드의 입력 요소입니다.
- * @param {string|number} todoId - todo 항목의 식별자입니다.
- * @param {Function} onEdit - 제목 클릭 시 편집을 재활성화하기 위한 콜백 함수입니다.
+ * @param {HTMLInputElement} input - 현재 편집 중인 입력 필드.
+ * @param {string|number} todoId - 편집 대상 todo 항목의 식별자.
+ * @param {Function} onEdit - 편집 모드 재진입을 위한 콜백 함수.
+ * @returns {void}
  */
 function cancelEdit(input, todoId, onEdit) {
   const span = createElement('span', {
@@ -331,14 +373,13 @@ function cancelEdit(input, todoId, onEdit) {
 }
 
 /**
- * todo 제목에서 공백을 제거한 후, 제목이 비어있지 않은지 검증합니다.
+ * 입력된 todo 제목의 공백을 제거한 후, 제목이 비어있지 않은지 검증합니다.
  *
- * 이 함수는 제공된 제목에서 모든 공백을 제거합니다.
- * 결과 문자열이 비어있다면 사용자에게 오류 메시지를 표시하고 false를 반환하며,
- * 그렇지 않으면 true를 반환합니다.
+ * - 제목이 비어있을 경우 미리 정의된 오류 메시지를 표시하고, 입력 필드에 포커스를 유지합니다.
+ * - 유효한 제목인 경우 true를 반환하여 추가 처리가 가능하도록 합니다.
  *
- * @param {string} title - 검증할 todo 제목입니다.
- * @returns {boolean} 제목이 비어있지 않으면 true, 그렇지 않으면 false를 반환합니다.
+ * @param {string} title - 검증할 todo 제목 텍스트.
+ * @returns {boolean} 제목이 유효하면 true, 그렇지 않으면 false.
  */
 export function validateTitle(title) {
   const trimmedTitle = title.trim();
@@ -352,22 +393,26 @@ export function validateTitle(title) {
 }
 
 /**
- * 새 todo 제목 입력 필드에서 공백을 제거한 텍스트를 가져옵니다.
+ * 새 todo 항목 생성 시, 입력 필드의 텍스트를 가져와 좌우 공백을 제거합니다.
  *
- * @returns {string} 사용자가 입력한 공백 제거된 제목 텍스트를 반환합니다.
+ * @returns {string} 사용자가 입력한, 공백이 제거된 todo 제목.
  */
 export function getInputTitle() {
   return elements.newTodoTitle.value.trim();
 }
 
 /**
- * UI 리스트에 새로운 todo 항목을 추가하고 내부 캐시를 업데이트합니다.
+ * 새 todo 항목 객체를 UI 리스트에 추가하고, 내부 캐시를 갱신합니다.
  *
- * 이 함수는 제공된 todo 항목에 대해 지정된 핸들러를 사용하여 DOM 요소를 생성한 후,
- * 이를 todo 리스트에 추가하고 내부 캐시에 저장합니다.
+ * - 주어진 todo 데이터와 이벤트 핸들러를 통해 새 요소를 생성하고 DOM에 추가합니다.
+ * - 내부 캐시 배열에도 해당 항목을 추가하여 상태 일관성을 유지합니다.
  *
- * @param {object} todo - 추가할 todo 항목 객체입니다.
- * @param {object} handlers - 편집, 상태 전환, 삭제 등의 작업을 위한 콜백 함수들을 포함하는 객체입니다.
+ * @param {Object} todo - 추가할 todo 항목 객체.
+ * @param {Object} handlers - 이벤트 핸들러 객체. 포함된 이벤트:
+ *    - onEdit: (todoId: string, newTitle: string) => Promise 또는 void.
+ *    - onToggle: (todoId: string, newState: boolean) => void.
+ *    - onDelete: (todoId: string) => void.
+ * @returns {void}
  */
 export function addTodoToList(todo, handlers) {
   const todoElement = createTodoItem(todo, handlers);
@@ -377,12 +422,14 @@ export function addTodoToList(todo, handlers) {
 }
 
 /**
- * 애니메이션 전환 효과와 함께 사용자에게 메시지를 표시합니다.
+ * 사용자 인터페이스에 애니메이션 효과와 함께 메시지를 표시합니다.
  *
- * 이 함수는 메시지 컨테이너 요소의 텍스트 내용을 제공된 메시지로 업데이트하고,
- * 'show' 애니메이션을 적용한 후 3초 후에 'hide' 애니메이션을 시작하여 메시지를 자동으로 숨깁니다.
+ * - 메시지 텍스트에 따라 동적으로 aria 속성을 설정하여 오류나 상태 메시지를 구분합니다.
+ * - 'show' 클래스를 통해 메시지를 표시하고, 일정 시간 후 'hide' 효과로 서서히 사라지게 합니다.
+ * - CSS 전환 효과에 따라, 메시지 제거 후 DOM 요소의 상태를 초기화합니다.
  *
- * @param {string} message - 표시할 메시지 텍스트입니다.
+ * @param {string} message - 사용자에게 표시할 메시지 텍스트.
+ * @returns {void}
  */
 export function showMessage(message) {
   const messageContainer = $$('.message-container')[0];
@@ -400,7 +447,7 @@ export function showMessage(message) {
     messageContainer.classList.add('hide'); // 서서히 사라지는 애니메이션 적용
 
     setTimeout(() => {
-      messageContainer.classList.remove('show', 'hide'); // 애니메이션이 끝난 후 완전히 숨김
-    }, 500); // transition 시간과 동일하게 설정 (0.5s)
+      messageContainer.classList.remove('show', 'hide'); // 애니메이션 종료 후 완전히 숨김
+    }, 500); // transition 시간과 동일하게 설정 (0.5초)
   }, 3000);
 }

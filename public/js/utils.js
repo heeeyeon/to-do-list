@@ -1,14 +1,18 @@
+/**
+ * 이 모듈은 DOM 조작 및 오류 처리를 위한 다양한 유틸리티 함수를 제공합니다.
+ * 모든 기능은 한국어로 완전하게 문서화되어 있습니다.
+ */
+
 import { ERROR_MESSAGES } from './config.js';
 
 /**
- * 오류를 처리합니다. 오류 유형을 콘솔에 기록하고, 이에 맞는 사용자 친화적 경고 메시지를 표시합니다.
+ * 오류 처리를 수행하는 함수입니다.
+ * 주어진 오류 객체와 오류 유형을 입력받아,
+ * 콘솔에 오류 정보를 출력하고 ERROR_MESSAGES에서 매핑된 사용자 메시지를 찾아 알림창을 표시합니다.
  *
- * 이 함수는 제공된 오류 유형을 포함하는 오류 메시지를 콘솔에 출력한 후,
- * ERROR_MESSAGES 매핑에서 해당 오류 유형에 맞는 사용자 친화적 메시지를 검색합니다.
- * 특정 메시지가 없을 경우, 오류 객체의 메시지 또는 기본 오류 메시지를 사용하여 알림창에 표시합니다.
- *
- * @param {*} error - 포착된 오류 객체.
- * @param {string} errorType - 구성에서 특정 오류 메시지를 검색하기 위한 키.
+ * @param {*} error - 처리할 오류 객체로, 오류에 관한 상세 정보를 포함합니다.
+ * @param {string} errorType - 오류 메시지를 식별하기 위한 문자열이며, 이 값을 통해 ERROR_MESSAGES에서 사용자 친화적 메시지를 검색합니다.
+ * @returns {void} 반환값이 없습니다.
  */
 export function handleError(error, errorType) {
   console.error(`${errorType} 실패:`, error);
@@ -17,44 +21,49 @@ export function handleError(error, errorType) {
 }
 
 /**
- * 제공된 CSS 선택자와 일치하는 첫 번째 DOM 요소를 찾아 반환합니다.
+ * 주어진 CSS 선택자와 일치하는 첫 번째 DOM 요소를 검색하여 반환합니다.
  *
- * @param {string} selector - 문서를 쿼리하기 위한 CSS 선택자.
- * @returns {Element|null} 일치하는 첫 번째 DOM 요소 또는 요소가 없으면 null을 반환합니다.
+ * 이 함수는 document.querySelector()를 사용하여 DOM 내에서 해당 요소를 찾습니다.
+ *
+ * @param {string} selector - 검색할 요소를 지정하는 CSS 선택자 문자열입니다.
+ * @returns {Element|null} 선택자에 해당하는 첫 번째 DOM 요소를 반환하며, 해당 요소가 없을 경우 null을 반환합니다.
  */
 export function $(selector) {
   return document.querySelector(selector);
 }
 
 /**
- * 지정된 CSS 선택자와 일치하는 모든 DOM 요소를 선택하여 반환합니다.
+ * 주어진 CSS 선택자와 일치하는 모든 DOM 요소를 검색하여 NodeList로 반환합니다.
  *
- * @param {string} selector - 문서 내에서 요소를 찾기 위한 유효한 CSS 선택자.
- * @returns {NodeListOf <Element>} 일치하는 모든 DOM 요소를 포함하는 NodeList를 반환합니다.
+ * 이 함수는 document.querySelectorAll()을 사용하여 문서 내의 모든 해당 요소를 선택합니다.
+ *
+ * @param {string} selector - 검색할 요소들을 지정하는 CSS 선택자 문자열입니다.
+ * @returns {NodeListOf <Element>} 선택된 모든 DOM 요소들을 포함하는 NodeList를 반환합니다.
  */
-
 export function $$(selector) {
   return document.querySelectorAll(selector);
 }
 
 /**
- * 하나 이상의 DOM 요소에 이벤트 리스너를 추가합니다.
+ * 하나 이상의 DOM 요소에 지정된 이벤트 리스너를 추가하는 함수입니다.
  *
- * 제공된 요소가 NodeList인 경우, 각 요소에 이벤트 리스너가 추가됩니다.
- * 단일 Element인 경우 해당 요소에 직접 이벤트 리스너가 추가됩니다.
- * 요소가 제공되지 않거나 유효하지 않은 경우, 경고 메시지를 콘솔에 출력합니다.
+ * 이 함수는 이벤트 대상이 단일 DOM 요소인지 또는 NodeList, HTMLCollection, 혹은 배열 형태인지 확인한 후,
+ * 각 요소에 지정된 이벤트 유형과 핸들러를 적용합니다.
+ * 유효하지 않은 요소가 전달되는 경우, 콘솔에 경고 메시지를 출력합니다.
  *
- * @param {NodeList|Element} elements - 이벤트 리스너를 추가할 대상 DOM 요소들.
- * @param {string} eventType - 추가할 이벤트의 종류 (예: 'click', 'submit', 'change').
- * @param {Function} handler - 이벤트 발생 시 실행할 콜백 함수.
- *
- * @example
- * // 단일 요소에 이벤트 리스너 추가 예시
- * addMultipleEventListeners(submitButton, 'click', handleSubmit);
+ * @param {Element|NodeList|HTMLCollection|Array<Element>} elements - 이벤트 리스너를 추가할 DOM 요소 또는 요소들의 컬렉션입니다.
+ * @param {string} eventType - 추가할 이벤트 이름으로, 예를 들어 'click', 'submit', 'change' 등이 있습니다.
+ * @param {Function} handler - 이벤트 발생 시 호출할 콜백 함수입니다.
+ * @returns {void} 반환값이 없습니다.
  *
  * @example
- * // 여러 요소에 이벤트 리스너 추가 예시
- * addMultipleEventListeners(deleteButtons, 'click', handleDelete);
+ * // 단일 DOM 요소에 이벤트 리스너 추가
+ * addMultipleEventListeners(document.getElementById('submitButton'), 'click', handleSubmit);
+ *
+ * @example
+ * // 여러 DOM 요소에 이벤트 리스너 추가
+ * const buttons = document.querySelectorAll('.deleteButton');
+ * addMultipleEventListeners(buttons, 'click', handleDelete);
  */
 export function addMultipleEventListeners(elements, eventType, handler) {
   if (!elements) {
@@ -77,16 +86,18 @@ export function addMultipleEventListeners(elements, eventType, handler) {
 }
 
 /**
- * 지정된 HTML 태그명을 사용하여 새로운 DOM 요소를 생성합니다.
+ * 지정된 태그 이름에 해당하는 새로운 DOM 요소를 생성하는 함수입니다.
  *
- * 선택적으로, 해당 요소에 CSS 클래스 이름, 텍스트 내용, 클릭 이벤트 핸들러를 설정할 수 있습니다.
+ * 이 함수는 선택적으로 요소에 CSS 클래스, 텍스트 내용, 그리고 'click' 이벤트 핸들러를 추가할 수 있습니다.
  *
- * @param {string} tag - 새로 생성할 DOM 요소의 HTML 태그명.
- * @param {Object} [options] - 요소의 선택적 속성들을 포함하는 객체입니다.
- * @param {string} [options.className] - 요소에 적용할 CSS 클래스 이름.
- * @param {string} [options.text] - 요소에 설정할 텍스트 내용.
- * @param {Function} [options.onClick] - 클릭 이벤트 리스너로 사용할 콜백 함수.
- * @returns {HTMLElement} 새롭게 생성된 DOM 요소를 반환합니다.
+ * @param {string} tag - 새로 생성할 DOM 요소의 HTML 태그명을 나타내는 문자열입니다.
+ * @param {Object} [options] - 생성된 DOM 요소에 적용할 선택적 속성들을 포함하는 객체입니다.
+ * @param {string} [options.className] - 생성된 요소에 적용할 CSS 클래스 이름입니다.
+ * @param {string} [options.text] - 생성된 요소의 텍스트 내용입니다.
+ * @param {Function} [options.onClick] - 생성된 요소에 추가할 'click' 이벤트 리스너 함수입니다.
+ * @returns {HTMLElement} 생성된 DOM 요소를 반환합니다.
+ *
+ * @sideeffect 새로운 DOM 요소가 생성되며, 옵션에 따라 이벤트 리스너가 추가될 수 있습니다.
  */
 export function createElement(tag, { className, text, onClick } = {}) {
   const element = document.createElement(tag);
