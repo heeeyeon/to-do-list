@@ -101,50 +101,6 @@ export const SHORTCUTS = {
     key: 'n',
   },
 };
- * - FETCH_FAILED: 데이터 조회 실패.
- * - CREATE_FAILED: 데이터 생성 실패.
- * - UPDATE_FAILED: 데이터 수정 실패.
- * - DELETE_FAILED: 데이터 삭제 실패.
- * - EMPTY_TITLE: 필수 입력값(제목) 누락.
- * - ITEM_NOT_FOUND: 요청한 항목 미발견.
- * - INVALID_RESPONSE: 부적절한 서버 응답.
- * - NETWORK_ERROR: 네트워크 연결 문제.
- * - TIMEOUT_ERROR: 서버 응답 시간 초과.
- * - SERVER_ERROR: 서버 내부 오류.
- * - GENERIC_ERROR: 일반 네트워크 오류.
- * @type {Object}
- */
-export const ERROR_TYPES = {
-  FETCH_FAILED: 'FETCH_FAILED',
-  CREATE_FAILED: 'CREATE_FAILED',
-  UPDATE_FAILED: 'UPDATE_FAILED',
-  DELETE_FAILED: 'DELETE_FAILED',
-  EMPTY_TITLE: 'EMPTY_TITLE',
-  ITEM_NOT_FOUND: 'ITEM_NOT_FOUND',
-  INVALID_RESPONSE: 'INVALID_RESPONSE',
-  NETWORK_ERROR: 'NETWORK_ERROR',
-  TIMEOUT_ERROR: 'TIMEOUT_ERROR',
-  SERVER_ERROR: 'SERVER_ERROR',
-  GENERIC_ERROR: 'GENERIC_ERROR',
-};
-
-/**
- * 단축키 설정 상수
- * 이 객체는 애플리케이션 내에서 빠른 액션 실행을 위한 단축키 조합을 정의합니다.
- * 각 단축키는 특정 기능을 호출하기 위해 사용되며, 아래와 같이 구성됩니다.
- * - CREATE_TODO: 새 할일 생성 기능에 대응합니다.
- *   - ctrl: 단축키에 Ctrl 키 사용 여부.
- *   - alt: 단축키에 Alt 키 사용 여부.
- *   - key: 실행할 단축키 문자.
- * @type {Object}
- */
-export const SHORTCUTS = {
-  CREATE_TODO: {
-    ctrl: true,
-    alt: true,
-    key: 'n',
-  },
-};
 
 /**
  * HTTP 메서드 상수
@@ -155,41 +111,6 @@ export const SHORTCUTS = {
  * - PUT: 기존 데이터를 전체적으로 업데이트할 때 사용합니다.
  * - PATCH: 기존 데이터를 부분적으로 업데이트할 때 사용합니다.
  * - DELETE: 데이터를 삭제할 때 사용합니다.
- * @type {Object}
- */
-export const HTTP_METHOD = {
-  GET: 'GET',
-  POST: 'POST',
-  PUT: 'PUT',
-  PATCH: 'PATCH',
-  DELETE: 'DELETE',
-};
-  POST: 'POST',
-  PUT: 'PUT',
-  PATCH: 'PATCH',
-  DELETE: 'DELETE',
-};
- * 예를 들어, 새 할일 생성 등의 기능에 단축키를 할당합니다.
- *
- * @type {Object}
- */
-export const SHORTCUTS = {
-  CREATE_TODO: {
-    ctrl: true,
-    alt: true,
-    key: 'n',
-  },
-};
-
-/**
- * HTTP 메서드 상수
- *
- * 이 객체는 API 요청에 사용되는 HTTP 메서드를 정의합니다.
- * 각 메서드는 요청 유형에 따른 서버 통신 방식의 차이를 나타냅니다.
- *
- * @type {Object}
- */
- * HTTP 메서드 상수
  * @type {Object}
  */
 export const HTTP_METHOD = {

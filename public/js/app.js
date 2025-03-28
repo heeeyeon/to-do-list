@@ -2,7 +2,6 @@
  * 이 모듈은 Todo 애플리케이션의 핵심 기능을 구현합니다.
  *
  * 이 파일은 할일 목록 관리, UI 상호작용, 그리고 API 통신 기능을 포함합니다.
- * 모든 주석은 한국어로 작성되었습니다.
  */
 
 import * as api from './api.js';
@@ -20,7 +19,7 @@ import { $, addMultipleEventListeners, handleError } from './utils.js';
  */
 function setupEventListeners() {
   // 안전하게 이벤트 리스너 추가하는 헬퍼 함수
-  const safeAddListener = (selector, eventType, handler) = > {
+  const safeAddListener = (selector, eventType, handler) => {
     const element = $(selector); // '#' 제거하고 전체 선택자를 받음
     if (!element) {
       console.warn(`요소를 찾을 수 없습니다: ${selector}`);
@@ -160,7 +159,7 @@ async function handleCreateSubmit() {
  * @description 할일 항목의 제목과 완료 상태를 업데이트합니다.
  *              업데이트 데이터 구성 후 API를 호출하여 변경 사항을 적용하고,
  *              성공 시 캐시된 할일 목록 및 UI를 갱신합니다.
- *              실패 시 오류 핸들러를 호출합니다.
+ *              API 업데이트 실패 시, handleError를 호출하여 'UPDATE_FAILED' 메시지와 함께 오류를 처리합니다.
  * @param {number|string} id - 업데이트할 할일 항목의 고유 식별자입니다.
  * @param {string|null} title - 새로운 제목. 변경하지 않으려면 null을 전달합니다.
  * @param {boolean|null} completed - 새로운 완료 상태. 변경하지 않으려면 null을 전달합니다.
@@ -207,75 +206,9 @@ function handleToggle(id, completed) {
  * @function handleDelete
  * @description 지정된 할일 항목을 API를 통해 삭제한 후,
  *              캐시에서 해당 항목을 제거하고 UI 목록을 새로 고칩니다.
- *              삭제 도중 오류 발생 시 오류 핸들러를 호출합니다.
+ *              API 호출 중 오류 발생 시, handleError를 호출하여 'DELETE_FAILED' 메시지와 함께 에러를 처리합니다.
  * @param {number|string} id - 삭제할 할일 항목의 고유 식별자입니다.
  * @returns {Promise<void>}
- */
-async function handleDelete(id) {
-  try {
-
- *
- * 오류 처리:
- *  - API 업데이트 실패 시, handleError를 호출하여 'UPDATE_FAILED' 메시지와 함께 오류를 처리합니다.
- */
-async function handleEdit(id, title, completed) {
-  try {
-    const updateData = {};
-    if (title !== null) updateData.title = title;
-    if (completed !== null) updateData.completed = completed;
-
-    const updatedTodo = await api.updateTodoItem(id, updateData);
-
-    // 캐시 업데이트 - 서버에서 반환된 데이터 사용
-    const cachedTodos = ui.getTodos();
-    const updatedTodos = cachedTodos.map(todo => (todo.id === id ? updatedTodo : todo));
-    ui.displayTodos(updatedTodos, {
-      onEdit: handleEdit,
-      onToggle: handleToggle,
-      onDelete: handleDelete,
-    });
-  } catch (error) {
-    handleError(error, 'UPDATE_FAILED');
-  }
-}
-
-/**
- * 할일 항목 완료 상태 전환 함수
- *
- * 이 함수는 특정 할일 항목의 완료 상태를 변경합니다.
- *
- * 역할:
- *  - 내부적으로 handleEdit 함수를 호출하여 할일 항목의 완료 상태를 업데이트합니다.
- *
- * 매개변수:
- *  - id (number|string): 대상 할일 항목의 고유 식별자.
- *  - completed (boolean): 변경할 완료 상태.
- *
- * 반환값: 없음.
- *
- * 오류 처리:
- *  - handleEdit 호출 중 발생한 오류는 해당 함수 내에서 처리합니다.
- */
-function handleToggle(id, completed) {
-  handleEdit(id, null, completed);
-}
-
-/**
- * 할일 항목 삭제 처리 함수
- *
- * 이 비동기 함수는 지정된 할일 항목을 삭제하고 UI를 업데이트합니다.
- *
- * 역할:
- *  - API를 호출하여 할일 항목을 삭제한 후 로컬 캐시에서 해당 항목을 제거합니다.
- *  - 업데이트된 할일 목록을 UI에 반영합니다.
- *
- * 매개변수:
- *  - id (number|string): 삭제할 할일 항목의 고유 식별자.
- *
- * 반환값: 없음.
- *
- * 오류 처리:
- *  - API 호출 중 오류 발생 시, handleError를 호출하여 'DELETE_FAILED' 메시지와 함께 에러를 처리합니다.
  */
 async function handleDelete(id) {
   try {
@@ -296,17 +229,13 @@ async function handleDelete(id) {
 /**
  * Todo 애플리케이션 초기화 함수
  *
- * 이 함수는 애플리케이션의 초기화 과정을 진행합니다.
- *
- * 역할:
- *  - 이벤트 리스너를 설정하고, 초기 할일 목록을 API 또는 캐시에서 불러와 UI를 준비합니다.
- *  - 초기화 과정에서 캐싱 메커니즘을 활용하여, 불필요한 API 호출을 줄이고 빠른 응답을 제공합니다.
- *
- * 매개변수: 없음.
- * 반환값: 없음.
- *
- * 오류 처리:
- *  - 초기화 과정 중 발생 가능한 오류는 각 함수 내 (예: setupEventListeners, refreshTodos)에서 handleError를 통해 처리됩니다.
+ * @function initTodoApp
+ * @description 이 함수는 애플리케이션의 초기화 과정을 진행합니다.
+ *              이벤트 리스너를 설정하고, 초기 할일 목록을 API 또는 캐시에서 불러와 UI를 준비합니다.
+ *              초기화 과정에서 캐싱 메커니즘을 활용하여, 불필요한 API 호출을 줄이고 빠른 응답을 제공합니다.
+ *              오류는 각 함수 내 (예: setupEventListeners, refreshTodos)에서 handleError를 통해 처리됩니다.
+ * @param {void}
+ * @returns {void}
  */
 export function initTodoApp() {
   setupEventListeners();

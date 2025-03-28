@@ -4,7 +4,6 @@
  */
 import { API_CONFIG, ERROR_MESSAGES, ERROR_TYPES, HTTP_METHOD } from './config.js';
 
- 
 /**
  * API 요청 구성 객체를 생성합니다.
  * 이 함수는 HTTP 요청에 필요한 옵션 객체를 생성하며, 주어진 HTTP 메서드와 선택적인 요청 본문 데이터를 기반으로 요청 설정을 구성합니다.
@@ -15,7 +14,7 @@ import { API_CONFIG, ERROR_MESSAGES, ERROR_TYPES, HTTP_METHOD } from './config.j
  * @returns {Object} HTTP 요청 옵션 객체로, 메서드, 헤더, 및 선택적으로 본문(JSON 문자열 변환 포함)이 포함됩니다.
  * @throws {Error} JSON 문자열 변환에 실패할 경우 예외가 발생할 수 있습니다.
  */
-const createRequestConfig = (method, body = null) = > {
+const createRequestConfig = (method, body = null) => {
   const config = {
     method,
     headers: {
@@ -108,44 +107,13 @@ export const createTodoItem = async title => {
 /**
  * 기존 할일 항목을 수정합니다.
  * 이 함수는 할일 항목의 고유 ID와 업데이트할 데이터를 받아, PATCH 요청을 통해 해당 항목을 업데이트합니다.
+ * 지정된 ID를 가진 할일에 대해 부분 업데이트(PATCH)를 수행합니다.
+ * 요청 본문에 업데이트 데이터를 포함하여 서버에 전송하며, 이 과정에서 네트워크 오류, 타임아웃 및 HTTP 상태 기반 오류가 발생할 수 있습니다.
  *
  * @param {string} id - 수정할 할일 항목의 고유 식별자.
  * @param {Object} updates - 할일 항목에 적용할 업데이트 객체 (예: title, completed).
  * @returns {Promise<Object>} 서버에서 갱신된 할일 항목 객체를 반환합니다.
  * @throws {Error} 유효하지 않은 ID, 업데이트 데이터 문제 또는 API 요청 실패 시.
- */
-export const updateTodoItem = async (id, updates) => {
-  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}/${id}`;
-  const config = createRequestConfig(HTTP_METHOD.PATCH, updates);
-
-  return await executeRequest(url, config);
-};
-
-  if (!title) {
-    throw new Error(ERROR_MESSAGES[ERROR_TYPES.EMPTY_TITLE]);
-  }
-
-  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}`;
-
-  const newTodo = {
-    title,
-    completed: false,
-  };
-
-  const config = createRequestConfig(HTTP_METHOD.POST, newTodo);
-  return await executeRequest(url, config);
-};
-
-/**
- * 기존 할일(Todo item)을 업데이트합니다.
- *
- * 지정된 ID를 가진 할일에 대해 부분 업데이트(PATCH)를 수행합니다.
- * 요청 본문에 업데이트 데이터를 포함하여 서버에 전송하며, 이 과정에서 네트워크 오류, 타임아웃 및 HTTP 상태 기반 오류가 발생할 수 있습니다.
- *
- * @param {string} id - 업데이트할 할일 항목의 고유 식별자(ID)
- * @param {Object} updates - 적용할 업데이트 데이터 객체 (예: { title: '새 제목', completed: true })
- * @returns {Promise<Object>} 업데이트가 성공한 경우, 서버로부터 반환된 수정된 할일 객체
- * @throws {Error} - API 요청 실패, 네트워크 오류, 타임아웃 또는 HTTP 상태 기반 오류 발생 시
  */
 export const updateTodoItem = async (id, updates) => {
   const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}/${id}`;
@@ -163,19 +131,6 @@ export const updateTodoItem = async (id, updates) => {
  * @param {string} id - 삭제할 할일 항목의 고유 식별자(ID)
  * @returns {Promise<boolean>} 삭제가 성공한 경우 true가 반환됩니다.
  * @throws {Error} - API 요청 실패, 네트워크 오류, 타임아웃 또는 HTTP 상태 코드에 따른 오류 발생 시
- */
-export const deleteTodoItem = async id => {
-  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}/${id}`;
-  const config = createRequestConfig(HTTP_METHOD.DELETE);
-
-  return await executeRequest(url, config);
-};
-
- * DELETE 요청을 전송하여 서버에서 Todo 항목을 삭제하고, 삭제 성공 여부를 반환합니다.
- *
- * @param {string} id - 삭제할 Todo 항목의 고유 ID
- * @returns {Promise<boolean>} 삭제가 성공한 경우 true 반환
- * @throws {Error} 삭제 요청 실패 시 에러 발생
  */
 export const deleteTodoItem = async id => {
   const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.TODOS}/${id}`;

@@ -43,8 +43,8 @@ export const modal = {
     elements.newTodoTitle.value = '';
     elements.newTodoTitle.focus();
 
-    // ESC 키로 모달 닫기 기능 추가
-    const handleEscape = e = > {
+    // ESC 키로 모달 닫기
+    const handleEscape = e => {
       if (e.key === 'Escape') {
         this.closeCreate();
         document.removeEventListener('keydown', handleEscape);
@@ -143,7 +143,7 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
           ? '완료됨, 클릭하여 미완료로 표시'
           : '미완료, 클릭하여 완료로 표시',
       },
-      onClick: () = > onToggle(todoId, !todo.completed),
+      onClick: () => onToggle(todoId, !todo.completed),
     });
 
     // 버튼 내용 개선
@@ -154,8 +154,8 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
       attributes: {
         'aria-label': `${todo.title} 삭제`,
       },
-      onClick: () = > {
-        if (confirm(\`"\${todo.title}" 항목을 삭제하시겠습니까?\`)) {
+      onClick: () => {
+        if (confirm(`"\${todo.title}" 항목을 삭제하시겠습니까?`)) {
           onDelete(todoId);
         }
       },
@@ -449,13 +449,5 @@ export function showMessage(message) {
     setTimeout(() => {
       messageContainer.classList.remove('show', 'hide'); // 애니메이션 종료 후 완전히 숨김
     }, 500); // transition 시간과 동일하게 설정 (0.5초)
-  }, 3000);
-}
-
-    messageContainer.classList.add('hide'); // 서서히 사라지는 애니메이션 적용
-
-    setTimeout(() => {
-      messageContainer.classList.remove('show', 'hide'); // 애니메이션이 끝난 후 완전히 숨김
-    }, 500); // transition 시간과 동일하게 설정 (0.5s)
   }, 3000);
 }

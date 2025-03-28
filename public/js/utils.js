@@ -90,28 +90,12 @@ export function addMultipleEventListeners(elements, eventType, handler) {
  *
  * 이 함수는 선택적으로 요소에 CSS 클래스, 텍스트 내용, 그리고 'click' 이벤트 핸들러를 추가할 수 있습니다.
  *
- * @param {string} tag - 생성할 DOM 요소의 HTML 태그명을 나타내는 문자열입니다.
- * @param {Object} [options] - DOM 요소에 적용할 선택적 속성들을 포함하는 객체입니다.
+ * @param {string} tag - 새로 생성할 DOM 요소의 HTML 태그명을 나타내는 문자열입니다.
+ * @param {Object} [options] - 생성된 DOM 요소에 적용할 선택적 속성들을 포함하는 객체입니다.
  * @param {string} [options.className] - 생성된 요소에 적용할 CSS 클래스 이름입니다.
- * @param {string} [options.text] - 생성된 요소의 텍스트 콘텐츠입니다.
- * @param {Function} [options.onClick] - 생성된 요소에 추가할 'click' 이벤트 핸들러 함수입니다.
+ * @param {string} [options.text] - 생성된 요소의 텍스트 내용입니다.
+ * @param {Function} [options.onClick] - 생성된 요소에 추가할 'click' 이벤트 리스너 함수입니다.
  * @returns {HTMLElement} 생성된 DOM 요소를 반환합니다.
- */
-export function createElement(tag, { className, text, onClick } = {}) {
-  const element = document.createElement(tag);
-  if (className) element.className = className;
-  if (text) element.textContent = text;
-  if (onClick) element.addEventListener('click', onClick);
-  return element;
-}
-
- * @param {string} tag - 새로 생성할 DOM 요소의 HTML 태그명입니다.
- * @param {Object} [options] - 생성된 요소에 대해 설정할 선택적 속성들을 담은 객체입니다.
- * @param {string} [options.className] - 새 요소에 적용할 CSS 클래스 이름입니다.
- * @param {string} [options.text] - 새 요소에 설정할 텍스트 내용입니다.
- * @param {Function} [options.onClick] - 새 요소에 추가할 클릭 이벤트 리스너 함수입니다.
- *
- * @returns {HTMLElement} 새롭게 생성된 DOM 요소를 반환합니다.
  *
  * @sideeffect 새로운 DOM 요소가 생성되며, 옵션에 따라 이벤트 리스너가 추가될 수 있습니다.
  */
