@@ -41,13 +41,3 @@ coverage/
 
 # json-server 데이터 파일
 db.json
-
-# CodeRabbit 관련
-.coderabbit/
-.coderabbit.json
-.coderabbit.yaml
-.coderabbit.yml
-.coderabbitrc
-.coderabbitrc.json
-.coderabbitrc.yaml
-.coderabbitrc.yml 
