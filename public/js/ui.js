@@ -168,8 +168,6 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
 
     li.appendChild(todoContent);
     li.appendChild(buttonsDiv);
-    li.appendChild(todoContent);
-    li.appendChild(buttonsDiv);
 
     return li;
   } catch (error) {
