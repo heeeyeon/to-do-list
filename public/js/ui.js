@@ -184,6 +184,7 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
   }
 }
 
+// TODO : 로딩 인디케이터 상태관리 추적 구현
 /**
  * Todo 리스트에 로딩 메시지 요소를 추가하여 로딩 상태를 사용자에게 표시합니다.
  *
@@ -415,12 +416,14 @@ export function getInputTitle() {
  * @returns {void}
  */
 export function addTodoToList(todo, handlers) {
+  // TODO : 기존아이템과의 중복 검증
   const todoElement = createTodoItem(todo, handlers);
   elements.todoList.appendChild(todoElement);
   // 캐시 업데이트
   todosCache.push(todo);
 }
 
+// TODO : 메시지 커스터마이징 개선 (메시지유형 및 지속시간)
 /**
  * 사용자 인터페이스에 애니메이션 효과와 함께 메시지를 표시합니다.
  *

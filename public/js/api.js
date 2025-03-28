@@ -41,6 +41,8 @@ const createRequestConfig = (method, body = null) => {
  */
 const executeRequest = async (url, config) => {
   try {
+    // TODO : 요청 타임아웃 구현
+    // TODO : HTTP상태 코드에 따른 재시도 전략, 오류 처리 추가 구현
     const response = await fetch(url, config);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
