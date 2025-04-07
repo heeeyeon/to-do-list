@@ -3,6 +3,7 @@
  * 모든 기능은 한국어로 완전하게 문서화되어 있습니다.
  */
 
+import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.0.3/dist/purify.es.js';
 import { ERROR_MESSAGES } from './config.js';
 
 /**
@@ -95,11 +96,17 @@ export function addMultipleEventListeners(elements, eventType, handler) {
  * @param {string} [options.id] - 요소의 ID입니다.
  * @param {string} [options.text] - 요소의 텍스트 노드 내용입니다. `textContent`로 처리됩니다.
  * @param {string} [options.html] - 요소의 HTML 콘텐츠입니다. `innerHTML`로 처리됩니다.
+ *   예: `DOMPurify.sanitize(html)` — 반드시 신뢰할 수 없는 입력에 대해 적용하세요.
+ *   가능하면 `text` 옵션을 사용하세요.
+ *   TODO: 현재는 DOMPurify로 html을 sanitize하고 있으므로 안전하지만,
+ *       API 명확성을 위해 html 대신 htmlSafe 키를 도입하여 신뢰된 HTML임을 명시하는 방향으로 리팩토링 고려.
+ *       이로써 sanitize 여부를 API 설계 수준에서 강제 가능해짐.
  * @param {Object.<string, string>} [options.attributes] - 요소에 설정할 추가 속성들입니다. data-*, aria-*, role 등 포함.
  * @param {(Node|string|Object|Array<Node|string|Object>)} [options.children] - 자식 노드, 텍스트, 또는 또 다른 createElement 옵션 객체의 배열입니다.
  * @param {Object.<string, Function>} [options.onEvent] - 사용자 정의 이벤트 핸들러 객체입니다. 예: { click: fn, blur: fn }
- * @param {...Object} [rest] - 그 외의 속성으로 onClick, onInput 등 개별 이벤트 핸들러들이 포함됩니다.
- *                                속성명이 'on'으로 시작하고 함수인 경우 자동으로 이벤트로 등록됩니다.
+ * @param {...Object} [rest] - 기타 이벤트 핸들러 속성입니다.
+ *   속성명이 'on'으로 시작하고 함수인 경우 이벤트로 자동 등록됩니다.
+ *   예: `...rest` 문법으로 onClick, onInput 등의 명시되지 않은 나머지 이벤트를 자동으로 인식하여 addEventListener로 연결합니다.
  *
  * @returns {HTMLElement} 생성된 DOM 요소를 반환합니다.
  *
@@ -124,7 +131,7 @@ export function createElement(tag, options = {}) {
   if (className) element.className = className;
   if (id) element.id = id;
   if (text) element.textContent = text;
-  if (html) element.innerHTML = html;
+  if (html) element.innerHTML = DOMPurify.sanitize(html);
 
   // ✅ 속성 처리 (data-*, aria-*, role 등)
   if (attributes) {
