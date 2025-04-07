@@ -1,48 +1,21 @@
-# CodeRabbit Configuration File
+review:
+  rules:
+    - when: pull_request_opened
+      assign:
+        reviewers:
+          - "maintainer1"
+          - "maintainer2"
+      add_labels:
+        - "needs-review"
+      comment: |
+        ## 변경사항 설명
+        {description}
 
-# 기본 설정
-settings:
-  # PR 생성 시 자동으로 리뷰어 할당
-  auto_assign_reviewers: true
+        ## 테스트
+        - [ ] 단위 테스트 통과
+        - [ ] 통합 테스트 통과
 
-  # PR 생성 시 자동으로 라벨 추가
-  auto_add_labels:
-    - 'needs-review'
-
-  # PR 생성 시 자동으로 템플릿 적용
-  pr_template: |
-    ## 변경사항 설명
-    {description}
-
-    ## 테스트
-    - [ ] 단위 테스트 통과
-    - [ ] 통합 테스트 통과
-
-    ## 체크리스트
-    - [ ] 코드 스타일 가이드 준수
-    - [ ] 문서 업데이트
-    - [ ] 불필요한 주석 제거
-
-# 리뷰어 설정
-reviewers:
-  default:
-    - 'maintainer1'
-    - 'maintainer2'
-
-# 브랜치 보호 규칙
-branch_protection:
-  main:
-    required_reviewers: 2
-    require_status_checks: true
-    require_branch_up_to_date: true
-
-# 자동화 규칙
-automation:
-  # PR이 생성되면 자동으로 리뷰어 할당
-  on_pull_request:
-    - action: assign_reviewers
-      reviewers: ['maintainer1', 'maintainer2']
-
-    # PR이 머지되면 자동으로 브랜치 삭제
-    - action: delete_branch
-      when: merged
+        ## 체크리스트
+        - [ ] 코드 스타일 가이드 준수
+        - [ ] 문서 업데이트
+        - [ ] 불필요한 주석 제거
