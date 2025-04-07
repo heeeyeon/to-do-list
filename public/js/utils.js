@@ -107,6 +107,9 @@ export function addMultipleEventListeners(elements, eventType, handler) {
  * @param {...Object} [rest] - 기타 이벤트 핸들러 속성입니다.
  *   속성명이 'on'으로 시작하고 함수인 경우 이벤트로 자동 등록됩니다.
  *   예: `...rest` 문법으로 onClick, onInput 등의 명시되지 않은 나머지 이벤트를 자동으로 인식하여 addEventListener로 연결합니다.
+ * @param {number} [options.depth=0] - 재귀 호출의 현재 깊이를 나타냅니다 (내부 사용용).
+ * @param {number} [options.maxDepth=3] - 생성 가능한 최대 재귀 깊이입니다. 기본값은 10입니다.
+ *   ⚠️ 너무 깊은 재귀 구조를 방지하기 위한 안전장치입니다.
  *
  * @returns {HTMLElement} 생성된 DOM 요소를 반환합니다.
  *
@@ -122,10 +125,36 @@ export function addMultipleEventListeners(elements, eventType, handler) {
  *     }
  *   ]
  * });
+ * @example
+ * const input = createElement('input', {
+ *   attributes: { type: 'text', placeholder: '이름 입력' },
+ *   onEvent: {
+ *     focus: () => console.log('입력 시작'),
+ *     blur: () => console.log('입력 종료')
+ *   }
+ * });
  */
 export function createElement(tag, options = {}) {
-  const { className, id, text, html, attributes, children, onEvent = {}, ...rest } = options;
+  if (typeof tag !== 'string') {
+    throw new TypeError(`Expected 'tag' to be a string, but received ${typeof tag}`);
+  }
 
+  const {
+    className,
+    id,
+    text,
+    html,
+    attributes,
+    children,
+    onEvent = {},
+    depth = 0,
+    maxDepth = 3,
+    ...rest
+  } = options;
+
+  if (depth > maxDepth) {
+    throw new Error(`Maximum recursive depth (${maxDepth}) exceeded.`);
+  }
   const element = document.createElement(tag);
 
   if (className) element.className = className;
@@ -143,13 +172,15 @@ export function createElement(tag, options = {}) {
   // ✅ 자식 요소 처리 - createElement를 재귀적으로 호출하여 트리 구조 생성 가능
   if (children) {
     const appendChild = child => {
+      if (child == null) return; // null 또는 undefined인 경우 무시
       if (typeof child === 'string') {
         element.appendChild(document.createTextNode(child));
       } else if (child instanceof Node) {
         element.appendChild(child);
       } else if (typeof child === 'object' && child.tag) {
         // createElement를 재귀적으로 호출하여 중첩된 자식 생성
-        element.appendChild(createElement(child.tag, child));
+        const childOptions = { ...child, depth: depth + 1, maxDepth };
+        element.appendChild(createElement(child.tag, childOptions));
       }
     };
 
