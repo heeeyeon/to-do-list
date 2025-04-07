@@ -86,23 +86,87 @@ export function addMultipleEventListeners(elements, eventType, handler) {
 }
 
 /**
- * 지정된 태그 이름에 해당하는 새로운 DOM 요소를 생성하는 함수입니다.
+ * 지정된 태그 이름에 해당하는 새로운 DOM 요소를 생성하는 유틸리티 함수입니다.
+ * 이 함수는 Open/Closed 원칙을 지키도록 확장성과 유지보수성을 고려하여 구현되었습니다.
  *
- * 이 함수는 선택적으로 요소에 CSS 클래스, 텍스트 내용, 그리고 'click' 이벤트 핸들러를 추가할 수 있습니다.
+ * @param {string} tag - 생성할 DOM 요소의 태그 이름입니다. 예: 'div', 'span', 'button' 등.
+ * @param {Object} [options] - 요소에 적용할 선택적 속성들을 포함한 객체입니다.
+ * @param {string} [options.className] - 요소에 적용할 CSS 클래스입니다.
+ * @param {string} [options.id] - 요소의 ID입니다.
+ * @param {string} [options.text] - 요소의 텍스트 노드 내용입니다. `textContent`로 처리됩니다.
+ * @param {string} [options.html] - 요소의 HTML 콘텐츠입니다. `innerHTML`로 처리됩니다.
+ * @param {Object.<string, string>} [options.attributes] - 요소에 설정할 추가 속성들입니다. data-*, aria-*, role 등 포함.
+ * @param {(Node|string|Object|Array<Node|string|Object>)} [options.children] - 자식 노드, 텍스트, 또는 또 다른 createElement 옵션 객체의 배열입니다.
+ * @param {Object.<string, Function>} [options.onEvent] - 사용자 정의 이벤트 핸들러 객체입니다. 예: { click: fn, blur: fn }
+ * @param {...Object} [rest] - 그 외의 속성으로 onClick, onInput 등 개별 이벤트 핸들러들이 포함됩니다.
+ *                                속성명이 'on'으로 시작하고 함수인 경우 자동으로 이벤트로 등록됩니다.
  *
- * @param {string} tag - 새로 생성할 DOM 요소의 HTML 태그명을 나타내는 문자열입니다.
- * @param {Object} [options] - 생성된 DOM 요소에 적용할 선택적 속성들을 포함하는 객체입니다.
- * @param {string} [options.className] - 생성된 요소에 적용할 CSS 클래스 이름입니다.
- * @param {string} [options.text] - 생성된 요소의 텍스트 내용입니다.
- * @param {Function} [options.onClick] - 생성된 요소에 추가할 'click' 이벤트 리스너 함수입니다.
  * @returns {HTMLElement} 생성된 DOM 요소를 반환합니다.
  *
- * @sideeffect 새로운 DOM 요소가 생성되며, 옵션에 따라 이벤트 리스너가 추가될 수 있습니다.
+ * @example
+ * const item = createElement('li', {
+ *   className: 'todo-item',
+ *   children: [
+ *     createElement('span', { text: '할 일' }),
+ *     {
+ *       tag: 'button',
+ *       text: '삭제',
+ *       onClick: () => alert('삭제됨')
+ *     }
+ *   ]
+ * });
  */
-export function createElement(tag, { className, text, onClick } = {}) {
+export function createElement(tag, options = {}) {
+  const { className, id, text, html, attributes, children, onEvent = {}, ...rest } = options;
+
   const element = document.createElement(tag);
+
   if (className) element.className = className;
+  if (id) element.id = id;
   if (text) element.textContent = text;
-  if (onClick) element.addEventListener('click', onClick);
+  if (html) element.innerHTML = html;
+
+  // ✅ 속성 처리 (data-*, aria-*, role 등)
+  if (attributes) {
+    for (const [key, value] of Object.entries(attributes)) {
+      element.setAttribute(key, value);
+    }
+  }
+
+  // ✅ 자식 요소 처리 - createElement를 재귀적으로 호출하여 트리 구조 생성 가능
+  if (children) {
+    const appendChild = child => {
+      if (typeof child === 'string') {
+        element.appendChild(document.createTextNode(child));
+      } else if (child instanceof Node) {
+        element.appendChild(child);
+      } else if (typeof child === 'object' && child.tag) {
+        // createElement를 재귀적으로 호출하여 중첩된 자식 생성
+        element.appendChild(createElement(child.tag, child));
+      }
+    };
+
+    if (Array.isArray(children)) {
+      children.forEach(appendChild);
+    } else {
+      appendChild(children);
+    }
+  }
+
+  // ✅ 명시적으로 등록된 이벤트 핸들러 자동 처리 (ex. onClick, onInput 등)
+  for (const [key, value] of Object.entries(rest)) {
+    if (key.startsWith('on') && typeof value === 'function') {
+      const event = key.slice(2).toLowerCase(); // onClick → click
+      element.addEventListener(event, value);
+    }
+  }
+
+  // ✅ onEvent 객체 기반 동적 이벤트 처리
+  for (const [eventName, handler] of Object.entries(onEvent)) {
+    if (typeof handler === 'function') {
+      element.addEventListener(eventName, handler);
+    }
+  }
+
   return element;
 }
