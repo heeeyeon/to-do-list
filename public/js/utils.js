@@ -3,7 +3,7 @@
  * 모든 기능은 한국어로 완전하게 문서화되어 있습니다.
  */
 
-import DOMPurify from 'dompurify';
+import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.0.3/dist/purify.es.js';
 import { ERROR_MESSAGES } from './config.js';
 
 /**
