@@ -135,78 +135,81 @@ export function addMultipleEventListeners(elements, eventType, handler) {
  * });
  */
 export function createElement(tag, options = {}) {
-  if (typeof tag !== 'string') {
-    throw new TypeError(`Expected 'tag' to be a string, but received ${typeof tag}`);
-  }
-
-  const {
-    className,
-    id,
-    text,
-    html,
-    attributes,
-    children,
-    onEvent = {},
-    depth = 0,
-    maxDepth = 3,
-    ...rest
-  } = options;
-
-  if (depth > maxDepth) {
-    throw new Error(`Maximum recursive depth (${maxDepth}) exceeded.`);
-  }
-  const element = document.createElement(tag);
-
-  if (className) element.className = className;
-  if (id) element.id = id;
-  if (text) element.textContent = text;
-  if (html) element.innerHTML = DOMPurify.sanitize(html);
-
-  // ✅ 속성 처리 (data-*, aria-*, role 등)
-  if (attributes) {
-    for (const [key, value] of Object.entries(attributes)) {
-      element.setAttribute(key, value);
+  const createElementWithDepth = (tag, options, depth = 0) => {
+    if (typeof tag !== 'string') {
+      throw new TypeError(`Expected 'tag' to be a string, but received ${typeof tag}`);
     }
-  }
 
-  // ✅ 자식 요소 처리 - createElement를 재귀적으로 호출하여 트리 구조 생성 가능
-  if (children) {
-    const appendChild = child => {
-      if (child == null) return; // null 또는 undefined인 경우 무시
-      if (typeof child === 'string') {
-        element.appendChild(document.createTextNode(child));
-      } else if (child instanceof Node) {
-        element.appendChild(child);
-      } else if (typeof child === 'object' && child.tag) {
-        // createElement를 재귀적으로 호출하여 중첩된 자식 생성
-        const childOptions = { ...child, depth: depth + 1, maxDepth };
-        element.appendChild(createElement(child.tag, childOptions));
-      } else if (typeof child === 'object') {
-        console.warn('자식 요소 객체에 필수 속성 `tag`가 누락되었습니다:', child);
+    const {
+      className,
+      id,
+      text,
+      html,
+      attributes,
+      children,
+      onEvent = {},
+      maxDepth = 3,
+      ...rest
+    } = options;
+
+    if (depth > maxDepth) {
+      throw new Error(`Maximum recursive depth (${maxDepth}) exceeded.`);
+    }
+    const element = document.createElement(tag);
+
+    if (className) element.className = className;
+    if (id) element.id = id;
+    if (text) element.textContent = text;
+    if (html) element.innerHTML = DOMPurify.sanitize(html);
+
+    // ✅ 속성 처리 (data-*, aria-*, role 등)
+    if (attributes) {
+      for (const [key, value] of Object.entries(attributes)) {
+        element.setAttribute(key, value);
       }
-    };
-
-    if (Array.isArray(children)) {
-      children.forEach(appendChild);
-    } else {
-      appendChild(children);
     }
-  }
 
-  // ✅ 명시적으로 등록된 이벤트 핸들러 자동 처리 (ex. onClick, onInput 등)
-  for (const [key, value] of Object.entries(rest)) {
-    if (key.startsWith('on') && typeof value === 'function') {
-      const event = key.slice(2).toLowerCase(); // onClick → click
-      element.addEventListener(event, value);
+    // ✅ 자식 요소 처리 - createElement를 재귀적으로 호출하여 트리 구조 생성 가능
+    if (children) {
+      const appendChild = child => {
+        if (child == null) return; // null 또는 undefined인 경우 무시
+        if (typeof child === 'string') {
+          element.appendChild(document.createTextNode(child));
+        } else if (child instanceof Node) {
+          element.appendChild(child);
+        } else if (typeof child === 'object' && child.tag) {
+          // createElement를 재귀적으로 호출하여 중첩된 자식 생성
+          const childOptions = { ...child, maxDepth };
+          element.appendChild(createElementWithDepth(child.tag, childOptions, depth + 1));
+        } else if (typeof child === 'object') {
+          console.warn('자식 요소 객체에 필수 속성 `tag`가 누락되었습니다:', child);
+        }
+      };
+
+      if (Array.isArray(children)) {
+        children.forEach(appendChild);
+      } else {
+        appendChild(children);
+      }
     }
-  }
 
-  // ✅ onEvent 객체 기반 동적 이벤트 처리
-  for (const [eventName, handler] of Object.entries(onEvent)) {
-    if (typeof handler === 'function') {
-      element.addEventListener(eventName, handler);
+    // ✅ 명시적으로 등록된 이벤트 핸들러 자동 처리 (ex. onClick, onInput 등)
+    for (const [key, value] of Object.entries(rest)) {
+      if (key.startsWith('on') && typeof value === 'function') {
+        const event = key.slice(2).toLowerCase(); // onClick → click
+        element.addEventListener(event, value);
+      }
     }
-  }
 
-  return element;
+    // ✅ onEvent 객체 기반 동적 이벤트 처리
+    for (const [eventName, handler] of Object.entries(onEvent)) {
+      if (typeof handler === 'function') {
+        element.addEventListener(eventName, handler);
+      }
+    }
+
+    return element;
+  };
+
+  return createElementWithDepth(tag, options, 0);
 }
