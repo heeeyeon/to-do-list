@@ -186,16 +186,34 @@ export function createElement(tag, options = {}) {
         }
       };
 
-      if (Array.isArray(children)) {
-        // DocumentFragment를 사용하여 DOM 조작 최소화
+      // ✅ 자식 요소 처리 - createElement를 재귀적으로 호출하여 트리 구조 생성 가능
+      if (children) {
+        const appendSafely = (child, target) => {
+          if (child == null) return; // null, undefined 무시
+
+          try {
+            if (typeof child === 'string') {
+              target.appendChild(document.createTextNode(child));
+            } else if (child instanceof Node) {
+              target.appendChild(child);
+            } else if (typeof child === 'object' && child.tag) {
+              const childOptions = { ...child, maxDepth };
+              const nested = createElementWithDepth(child.tag, childOptions, depth + 1);
+              target.appendChild(nested);
+            } else if (typeof child === 'object') {
+              console.warn('자식 요소 객체에 필수 속성 `tag`가 누락되었습니다:', child);
+            } else {
+              console.warn('지원되지 않는 자식 요소 유형:', typeof child, child);
+            }
+          } catch (error) {
+            console.error('자식 요소 추가 중 오류 발생:', error);
+          }
+        };
+
         const fragment = document.createDocumentFragment();
-        children.forEach(child => {
-          const node = appendChild(child);
-          if (node) fragment.appendChild(node);
-        });
+        const childList = Array.isArray(children) ? children : [children];
+        childList.forEach(child => appendSafely(child, fragment));
         element.appendChild(fragment);
-      } else {
-        appendChild(children);
       }
     }
 
