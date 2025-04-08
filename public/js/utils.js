@@ -113,6 +113,9 @@ export function addMultipleEventListeners(elements, eventType, handler) {
  *
  * @returns {HTMLElement} 생성된 DOM 요소를 반환합니다.
  *
+ * @note 대규모 중첩 구조(깊이가 매우 깊은 트리)의 경우 재귀적 접근으로 인해 성능 제약이 있을 수 있습니다.
+ *       대량의 요소를 생성하는 경우 성능에 주의하세요.
+ *
  * @example
  * const item = createElement('li', {
  *   className: 'todo-item',
@@ -164,65 +167,55 @@ export function createElement(tag, options = {}) {
 
     // ✅ 속성 처리 (data-*, aria-*, role 등)
     if (attributes) {
-      for (const [key, value] of Object.entries(attributes)) {
-        element.setAttribute(key, value);
+      try {
+        for (const [key, value] of Object.entries(attributes)) {
+          element.setAttribute(key, value);
+        }
+      } catch (error) {
+        console.error('속성 설정 중 오류 발생:', error);
       }
     }
 
     // ✅ 자식 요소 처리 - createElement를 재귀적으로 호출하여 트리 구조 생성 가능
     if (children) {
-      const appendChild = child => {
-        if (child == null) return; // null 또는 undefined인 경우 무시
-        if (typeof child === 'string') {
-          element.appendChild(document.createTextNode(child));
-        } else if (child instanceof Node) {
-          element.appendChild(child);
-        } else if (typeof child === 'object' && child.tag) {
-          // createElement를 재귀적으로 호출하여 중첩된 자식 생성
-          const childOptions = { ...child, maxDepth };
-          element.appendChild(createElementWithDepth(child.tag, childOptions, depth + 1));
-        } else if (child !== null && typeof child === 'object') {
-          console.warn('자식 요소 객체에 필수 속성 `tag`가 누락되었습니다:', child);
+      const appendSafely = (child, target) => {
+        if (child == null) return; // null, undefined 무시
+
+        try {
+          if (typeof child === 'string') {
+            target.appendChild(document.createTextNode(child));
+          } else if (child instanceof Node) {
+            target.appendChild(child);
+          } else if (typeof child === 'object' && child.tag) {
+            const childOptions = { ...child, maxDepth };
+            const nested = createElementWithDepth(child.tag, childOptions, depth + 1);
+            target.appendChild(nested);
+          } else if (typeof child === 'object') {
+            console.warn('자식 요소 객체에 필수 속성 `tag`가 누락되었습니다:', child);
+          } else {
+            console.warn('지원되지 않는 자식 요소 유형:', typeof child, child);
+          }
+        } catch (error) {
+          console.error('자식 요소 추가 중 오류 발생:', error);
         }
       };
 
-      // ✅ 자식 요소 처리 - createElement를 재귀적으로 호출하여 트리 구조 생성 가능
-      if (children) {
-        const appendSafely = (child, target) => {
-          if (child == null) return; // null, undefined 무시
-
-          try {
-            if (typeof child === 'string') {
-              target.appendChild(document.createTextNode(child));
-            } else if (child instanceof Node) {
-              target.appendChild(child);
-            } else if (typeof child === 'object' && child.tag) {
-              const childOptions = { ...child, maxDepth };
-              const nested = createElementWithDepth(child.tag, childOptions, depth + 1);
-              target.appendChild(nested);
-            } else if (typeof child === 'object') {
-              console.warn('자식 요소 객체에 필수 속성 `tag`가 누락되었습니다:', child);
-            } else {
-              console.warn('지원되지 않는 자식 요소 유형:', typeof child, child);
-            }
-          } catch (error) {
-            console.error('자식 요소 추가 중 오류 발생:', error);
-          }
-        };
-
-        const fragment = document.createDocumentFragment();
-        const childList = Array.isArray(children) ? children : [children];
-        childList.forEach(child => appendSafely(child, fragment));
-        element.appendChild(fragment);
-      }
+      const fragment = document.createDocumentFragment();
+      const childList = Array.isArray(children) ? children : [children];
+      childList.forEach(child => appendSafely(child, fragment));
+      element.appendChild(fragment);
     }
 
     // ✅ 명시적으로 등록된 이벤트 핸들러 자동 처리 (ex. onClick, onInput 등)
-    for (const [key, value] of Object.entries(rest)) {
-      if (key.startsWith('on') && typeof value === 'function') {
-        const event = key.slice(2).toLowerCase(); // onClick → click
-        element.addEventListener(event, value);
+    try {
+      for (const [key, value] of Object.entries(rest)) {
+        if (key.startsWith('on') && typeof value === 'function') {
+          const event = key.slice(2).toLowerCase(); // onClick → click
+          element.addEventListener(event, value);
+        }
       }
+    } catch (error) {
+      console.error('이벤트 핸들러 등록 중 오류 발생:', error);
     }
 
     // ✅ onEvent 객체 기반 동적 이벤트 처리
