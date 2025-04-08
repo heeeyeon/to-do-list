@@ -108,7 +108,7 @@ export function addMultipleEventListeners(elements, eventType, handler) {
  *   속성명이 'on'으로 시작하고 함수인 경우 이벤트로 자동 등록됩니다.
  *   예: `...rest` 문법으로 onClick, onInput 등의 명시되지 않은 나머지 이벤트를 자동으로 인식하여 addEventListener로 연결합니다.
  * @param {number} [options.depth=0] - 재귀 호출의 현재 깊이를 나타냅니다 (내부 사용용).
- * @param {number} [options.maxDepth=3] - 생성 가능한 최대 재귀 깊이입니다. 기본값은 10입니다.
+ * @param {number} [options.maxDepth=3] - 생성 가능한 최대 재귀 깊이입니다. 기본값은 3입니다.
  *   ⚠️ 너무 깊은 재귀 구조를 방지하기 위한 안전장치입니다.
  *
  * @returns {HTMLElement} 생성된 DOM 요소를 반환합니다.
@@ -181,6 +181,8 @@ export function createElement(tag, options = {}) {
         // createElement를 재귀적으로 호출하여 중첩된 자식 생성
         const childOptions = { ...child, depth: depth + 1, maxDepth };
         element.appendChild(createElement(child.tag, childOptions));
+      } else if (typeof child === 'object') {
+        console.warn('자식 요소 객체에 필수 속성 `tag`가 누락되었습니다:', child);
       }
     };
 
