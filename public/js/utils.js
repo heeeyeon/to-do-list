@@ -3,6 +3,7 @@
  * 모든 기능은 한국어로 완전하게 문서화되어 있습니다.
  */
 
+import DOMPurify from 'https://cdn.jsdelivr.net/npm/dompurify@3.0.3/dist/purify.es.js';
 import { ERROR_MESSAGES } from './config.js';
 
 /**
@@ -86,23 +87,146 @@ export function addMultipleEventListeners(elements, eventType, handler) {
 }
 
 /**
- * 지정된 태그 이름에 해당하는 새로운 DOM 요소를 생성하는 함수입니다.
+ * 지정된 태그 이름에 해당하는 새로운 DOM 요소를 생성하는 유틸리티 함수입니다.
+ * 이 함수는 Open/Closed 원칙을 지키도록 확장성과 유지보수성을 고려하여 구현되었습니다.
  *
- * 이 함수는 선택적으로 요소에 CSS 클래스, 텍스트 내용, 그리고 'click' 이벤트 핸들러를 추가할 수 있습니다.
+ * @param {string} tag - 생성할 DOM 요소의 태그 이름입니다. 예: 'div', 'span', 'button' 등.
+ * @param {Object} [options] - 요소에 적용할 선택적 속성들을 포함한 객체입니다.
+ * @param {string} [options.className] - 요소에 적용할 CSS 클래스입니다.
+ * @param {string} [options.id] - 요소의 ID입니다.
+ * @param {string} [options.text] - 요소의 텍스트 노드 내용입니다. `textContent`로 처리됩니다.
+ * @param {string} [options.html] - 요소의 HTML 콘텐츠입니다. `innerHTML`로 처리됩니다.
+ *   예: `DOMPurify.sanitize(html)` — 반드시 신뢰할 수 없는 입력에 대해 적용하세요.
+ *   가능하면 `text` 옵션을 사용하세요.
+ *   TODO: 현재는 DOMPurify로 html을 sanitize하고 있으므로 안전하지만,
+ *       API 명확성을 위해 html 대신 htmlSafe 키를 도입하여 신뢰된 HTML임을 명시하는 방향으로 리팩토링 고려.
+ *       이로써 sanitize 여부를 API 설계 수준에서 강제 가능해짐.
+ * @param {Object.<string, string>} [options.attributes] - 요소에 설정할 추가 속성들입니다. data-*, aria-*, role 등 포함.
+ * @param {(Node|string|Object|Array<Node|string|Object>)} [options.children] - 자식 노드, 텍스트, 또는 또 다른 createElement 옵션 객체의 배열입니다.
+ * @param {Object.<string, Function>} [options.onEvent] - 사용자 정의 이벤트 핸들러 객체입니다. 예: { click: fn, blur: fn }
+ * @param {...Object} [rest] - 기타 이벤트 핸들러 속성입니다.
+ *   속성명이 'on'으로 시작하고 함수인 경우 이벤트로 자동 등록됩니다.
+ *   예: `...rest` 문법으로 onClick, onInput 등의 명시되지 않은 나머지 이벤트를 자동으로 인식하여 addEventListener로 연결합니다.
+ * @param {number} [options.depth=0] - 재귀 호출의 현재 깊이를 나타냅니다 (내부 사용용).
+ * @param {number} [options.maxDepth=10] - 생성 가능한 최대 재귀 깊이입니다. 기본값은 10입니다.
+ *   ⚠️ 너무 깊은 재귀 구조를 방지하기 위한 안전장치입니다.
  *
- * @param {string} tag - 새로 생성할 DOM 요소의 HTML 태그명을 나타내는 문자열입니다.
- * @param {Object} [options] - 생성된 DOM 요소에 적용할 선택적 속성들을 포함하는 객체입니다.
- * @param {string} [options.className] - 생성된 요소에 적용할 CSS 클래스 이름입니다.
- * @param {string} [options.text] - 생성된 요소의 텍스트 내용입니다.
- * @param {Function} [options.onClick] - 생성된 요소에 추가할 'click' 이벤트 리스너 함수입니다.
  * @returns {HTMLElement} 생성된 DOM 요소를 반환합니다.
  *
- * @sideeffect 새로운 DOM 요소가 생성되며, 옵션에 따라 이벤트 리스너가 추가될 수 있습니다.
+ * @note 대규모 중첩 구조(깊이가 매우 깊은 트리)의 경우 재귀적 접근으로 인해 성능 제약이 있을 수 있습니다.
+ *       대량의 요소를 생성하는 경우 성능에 주의하세요.
+ *
+ * @example
+ * const item = createElement('li', {
+ *   className: 'todo-item',
+ *   children: [
+ *     createElement('span', { text: '할 일' }),
+ *     {
+ *       tag: 'button',
+ *       text: '삭제',
+ *       onClick: () => alert('삭제됨')
+ *     }
+ *   ]
+ * });
+ * @example
+ * const input = createElement('input', {
+ *   attributes: { type: 'text', placeholder: '이름 입력' },
+ *   onEvent: {
+ *     focus: () => console.log('입력 시작'),
+ *     blur: () => console.log('입력 종료')
+ *   }
+ * });
  */
-export function createElement(tag, { className, text, onClick } = {}) {
-  const element = document.createElement(tag);
-  if (className) element.className = className;
-  if (text) element.textContent = text;
-  if (onClick) element.addEventListener('click', onClick);
-  return element;
+export function createElement(tag, options = {}) {
+  const createElementWithDepth = (tag, options, depth = 0) => {
+    if (typeof tag !== 'string') {
+      throw new TypeError(`Expected 'tag' to be a string, but received ${typeof tag}`);
+    }
+
+    const {
+      className,
+      id,
+      text,
+      html,
+      attributes,
+      children,
+      onEvent = {},
+      maxDepth = 10,
+      ...rest
+    } = options;
+
+    if (depth > maxDepth) {
+      throw new Error(`Maximum recursive depth (${maxDepth}) exceeded.`);
+    }
+    const element = document.createElement(tag);
+
+    if (className) element.className = className;
+    if (id) element.id = id;
+    if (text) element.textContent = text;
+    if (html) element.innerHTML = DOMPurify.sanitize(html);
+
+    // ✅ 속성 처리 (data-*, aria-*, role 등)
+    if (attributes) {
+      try {
+        for (const [key, value] of Object.entries(attributes)) {
+          element.setAttribute(key, value);
+        }
+      } catch (error) {
+        console.error('속성 설정 중 오류 발생:', error);
+      }
+    }
+
+    // ✅ 자식 요소 처리 - createElement를 재귀적으로 호출하여 트리 구조 생성 가능
+    if (children) {
+      const appendSafely = (child, target) => {
+        if (child == null) return; // null, undefined 무시
+
+        try {
+          if (typeof child === 'string') {
+            target.appendChild(document.createTextNode(child));
+          } else if (child instanceof Node) {
+            target.appendChild(child);
+          } else if (typeof child === 'object' && child.tag) {
+            const childOptions = { ...child, maxDepth };
+            const nested = createElementWithDepth(child.tag, childOptions, depth + 1);
+            target.appendChild(nested);
+          } else if (typeof child === 'object') {
+            console.warn('자식 요소 객체에 필수 속성 `tag`가 누락되었습니다:', child);
+          } else {
+            console.warn('지원되지 않는 자식 요소 유형:', typeof child, child);
+          }
+        } catch (error) {
+          console.error('자식 요소 추가 중 오류 발생:', error);
+        }
+      };
+
+      const fragment = document.createDocumentFragment();
+      const childList = Array.isArray(children) ? children : [children];
+      childList.forEach(child => appendSafely(child, fragment));
+      element.appendChild(fragment);
+    }
+
+    // ✅ 명시적으로 등록된 이벤트 핸들러 자동 처리 (ex. onClick, onInput 등)
+    try {
+      for (const [key, value] of Object.entries(rest)) {
+        if (key.startsWith('on') && typeof value === 'function') {
+          const event = key.slice(2).toLowerCase(); // onClick → click
+          element.addEventListener(event, value);
+        }
+      }
+    } catch (error) {
+      console.error('이벤트 핸들러 등록 중 오류 발생:', error);
+    }
+
+    // ✅ onEvent 객체 기반 동적 이벤트 처리
+    for (const [eventName, handler] of Object.entries(onEvent)) {
+      if (typeof handler === 'function') {
+        element.addEventListener(eventName, handler);
+      }
+    }
+
+    return element;
+  };
+
+  return createElementWithDepth(tag, options, 0);
 }
