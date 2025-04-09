@@ -90,7 +90,7 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
       text: todo.title,
     });
 
-    const todoItem = createElement('li', {
+    return createElement('li', {
       className: `todo-item ${todo.completed ? 'completed' : ''}`,
       id: `todo-${todoId}`,
       attributes: {
@@ -171,8 +171,6 @@ function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
         },
       ],
     });
-
-    return todoItem;
   } catch (error) {
     console.error('createTodoItem 오류:', error);
     return createElement('li', {
