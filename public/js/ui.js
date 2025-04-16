@@ -85,91 +85,92 @@ export const modal = {
 function createTodoItem(todo, { onEdit, onToggle, onDelete }) {
   try {
     const todoId = String(todo.id);
-
-    const li = createElement('li', {
-      className: `todo-item ${todo.completed ? 'completed' : ''}`,
-      id: `todo-${todoId}`,
-      attributes: {
-        'data-todo-id': todoId,
-      },
-    });
-
-    const todoContent = createElement('div', {
-      className: 'todo-content',
-      onClick: () => makeEditable(titleSpan, todoId, onEdit),
-      attributes: {
-        role: 'button',
-        tabindex: '0',
-        'aria-label': `${todo.title} 편집하기`,
-      },
-      onKeyDown: e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          makeEditable(titleSpan, todoId, onEdit);
-        }
-      },
-    });
-
     const titleSpan = createElement('span', {
       className: 'title',
       text: todo.title,
     });
 
-    const editIcon = createElement('span', {
-      className: 'edit-icon',
+    return createElement('li', {
+      className: `todo-item ${todo.completed ? 'completed' : ''}`,
+      id: `todo-${todoId}`,
       attributes: {
-        'aria-hidden': 'true',
+        'data-todo-id': todoId,
       },
+      children: [
+        // Todo 콘텐츠 영역
+        {
+          tag: 'div',
+          className: 'todo-content',
+          onClick: () => makeEditable(titleSpan, todoId, onEdit),
+          attributes: {
+            role: 'button',
+            tabindex: '0',
+            'aria-label': `${todo.title} 편집하기`,
+          },
+          children: [
+            titleSpan,
+            {
+              tag: 'span',
+              className: 'edit-icon',
+              html: ` <svg
+                  width="16" height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  role="img"
+                  aria-label="편집 아이콘"
+                >
+                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                </svg> `,
+              attributes: {
+                'aria-hidden': 'true',
+              },
+            },
+          ],
+          onKeyDown: e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              makeEditable(titleSpan, todoId, onEdit);
+            }
+          },
+        },
+        // buttons 영역
+        {
+          tag: 'div',
+          className: 'todo-buttons',
+          children: [
+            // toggleButton
+            {
+              tag: 'button',
+              className: `toggle-btn ${todo.completed ? '' : 'incomplete'}`,
+              html: ` <span class="toggle-icon" aria-hidden="true">${todo.completed ? '✅' : '🟨'}</span> <span class="toggle-text">${todo.completed ? '완료됨' : '미완료'}</span> `,
+              attributes: {
+                'aria-pressed': todo.completed ? 'true' : 'false',
+                'aria-label': todo.completed
+                  ? '완료됨, 클릭하여 미완료로 표시'
+                  : '미완료, 클릭하여 완료로 표시',
+              },
+              onClick: () => onToggle(todoId, !todo.completed),
+            },
+            // deleteButton
+            {
+              tag: 'button',
+              className: 'delete-btn',
+              text: '삭제',
+              attributes: {
+                'aria-label': `${todo.title} 삭제`,
+              },
+              onClick: () => {
+                if (confirm(`"${todo.title}" 항목을 삭제하시겠습니까?`)) {
+                  onDelete(todoId);
+                }
+              },
+            },
+          ],
+        },
+      ],
     });
-
-    // SVG 아이콘 추가하기
-    editIcon.innerHTML = ` <svg
-        width="16" height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        role="img"
-        aria-label="편집 아이콘"
-      >
-        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-      </svg> `;
-    const buttonsDiv = createElement('div', { className: 'todo-buttons' });
-    const toggleButton = createElement('button', {
-      className: `toggle-btn ${todo.completed ? '' : 'incomplete'}`,
-      attributes: {
-        'aria-pressed': todo.completed ? 'true' : 'false',
-        'aria-label': todo.completed
-          ? '완료됨, 클릭하여 미완료로 표시'
-          : '미완료, 클릭하여 완료로 표시',
-      },
-      onClick: () => onToggle(todoId, !todo.completed),
-    });
-
-    // 버튼 내용 개선
-    toggleButton.innerHTML = ` <span class="toggle-icon" aria-hidden="true">${todo.completed ? '✅' : '🟨'}</span> <span class="toggle-text">${todo.completed ? '완료됨' : '미완료'}</span> `;
-    const deleteButton = createElement('button', {
-      className: 'delete-btn',
-      text: '삭제',
-      attributes: {
-        'aria-label': `${todo.title} 삭제`,
-      },
-      onClick: () => {
-        if (confirm(`"\${todo.title}" 항목을 삭제하시겠습니까?`)) {
-          onDelete(todoId);
-        }
-      },
-    });
-
-    todoContent.appendChild(titleSpan);
-    todoContent.appendChild(editIcon);
-    buttonsDiv.appendChild(toggleButton);
-    buttonsDiv.appendChild(deleteButton);
-
-    li.appendChild(todoContent);
-    li.appendChild(buttonsDiv);
-
-    return li;
   } catch (error) {
     console.error('createTodoItem 오류:', error);
     return createElement('li', {
